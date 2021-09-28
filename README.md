@@ -1,4 +1,4 @@
-# 2021 LUNAR SURFACE OPERATIONS
+# 2021 LUNAR SURFACE OPERATIONS (2-3 October 2021)
 ---
 Space Apps Challenge – Ruse is organized for a fifth year in the city of Ruse, Bulgaria.
 
