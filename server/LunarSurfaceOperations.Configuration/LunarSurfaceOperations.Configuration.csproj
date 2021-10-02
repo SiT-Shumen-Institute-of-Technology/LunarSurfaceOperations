@@ -6,6 +6,7 @@
 
     <ItemGroup>
       <PackageReference Include="JetBrains.Annotations" Version="2021.2.0" />
+      <PackageReference Include="Microsoft.Extensions.Options" Version="5.0.0" />
     </ItemGroup>
 
 </Project>

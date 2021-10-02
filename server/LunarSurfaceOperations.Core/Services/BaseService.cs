@@ -43,15 +43,15 @@
             var databaseModel = new TEntity { Id = ObjectId.GenerateNewId() };
 
             var enhanceDatabaseModel = this.EnhanceDatabaseModel(databaseModel, prototype);
-            if (enhanceDatabaseModel.Success)
+            if (enhanceDatabaseModel.Success is false)
                 return operationResult.AppendErrorMessages(enhanceDatabaseModel);
 
             var createResult = await this._repository.CreateAsync(databaseModel, cancellationToken);
-            if (createResult.Success == false)
+            if (createResult.Success is false)
                 return operationResult.AppendErrorMessages(createResult);
 
             var constructLayout = this.ConstructLayout(databaseModel);
-            if (constructLayout.Success == false)
+            if (constructLayout.Success is false)
                 return operationResult.AppendErrorMessages(constructLayout);
 
             operationResult.Data = constructLayout.Data;
@@ -82,15 +82,15 @@
             }
 
             var enhanceDatabaseModel = this.EnhanceDatabaseModel(originalEntity, prototype);
-            if (enhanceDatabaseModel.Success)
+            if (enhanceDatabaseModel.Success is false)
                 return operationResult.AppendErrorMessages(enhanceDatabaseModel);
 
             var createResult = await this._repository.UpdateAsync(originalEntity, cancellationToken);
-            if (createResult.Success == false)
+            if (createResult.Success is false)
                 operationResult.AppendErrorMessages(createResult);
 
             var constructLayout = this.ConstructLayout(originalEntity);
-            if (constructLayout.Success == false)
+            if (constructLayout.Success is false)
                 return operationResult.AppendErrorMessages(constructLayout);
 
             operationResult.Data = constructLayout.Data;

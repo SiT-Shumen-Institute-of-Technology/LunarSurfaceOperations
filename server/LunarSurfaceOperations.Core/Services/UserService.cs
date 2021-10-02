@@ -5,13 +5,14 @@
     using LunarSurfaceOperations.Authentication.Contracts;
     using LunarSurfaceOperations.Core.Contracts.OperativeModels.Layouts;
     using LunarSurfaceOperations.Core.Contracts.OperativeModels.Prototypes;
+    using LunarSurfaceOperations.Core.Contracts.Services;
     using LunarSurfaceOperations.Core.OperativeModels.Layouts;
     using LunarSurfaceOperations.Data.Contracts;
     using LunarSurfaceOperations.Data.Models;
     using LunarSurfaceOperations.Utilities.OperationResults;
     using LunarSurfaceOperations.Validation.Contracts;
 
-    public class UserService : BaseService<IUserRepository, User, IUserPrototype, IUserLayout>
+    public class UserService : BaseService<IUserRepository, User, IUserPrototype, IUserLayout>, IUserService
     {
         private readonly IPasswordHashingService _hashingService;
         
@@ -34,6 +35,7 @@
                 return operationResult.AppendErrorMessages(hashPassword);
 
             databaseModel.Username = prototype.Username;
+            databaseModel.Email = prototype.Email;
             databaseModel.Password = hashPassword.Data.HashedValue;
             databaseModel.Salt = hashPassword.Data.Salt;
 

@@ -8,4 +8,8 @@
       <ProjectReference Include="..\LunarSurfaceOperations.Utilities\LunarSurfaceOperations.Utilities.csproj" />
     </ItemGroup>
 
+    <ItemGroup>
+      <PackageReference Include="FluentValidation" Version="10.3.3" />
+    </ItemGroup>
+
 </Project>

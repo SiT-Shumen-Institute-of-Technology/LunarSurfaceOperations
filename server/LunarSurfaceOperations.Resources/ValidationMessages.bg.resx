@@ -24,4 +24,7 @@
     <data name="InvalidStringArgument" xml:space="preserve">
         <value>Задължителен текстов параметър не е предоставен.</value>
     </data>
+    <data name="InvalidRequest" xml:space="preserve">
+        <value>Заявката, която изпратихте, съдържа невалидни данни.</value>
+    </data>
 </root>

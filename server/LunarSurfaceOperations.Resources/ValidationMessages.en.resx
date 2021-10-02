@@ -24,4 +24,7 @@
     <data name="InvalidStringArgument" xml:space="preserve">
         <value>A required text argument is not provided.</value>
     </data>
+    <data name="InvalidRequest" xml:space="preserve">
+        <value>The sent request is not in a valid format.</value>
+    </data>
 </root>
