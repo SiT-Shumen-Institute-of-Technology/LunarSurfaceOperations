@@ -2,6 +2,9 @@ import { getWorkspaces } from '@/services/workspaces'
 import { IResult } from '@/types/IResult';
 import { IWorkspace } from '@/types/IWorkspace'
 import { createStore } from 'vuex'
+import { getWorkspaces } from '@/services/workspaces'
+import { IResult } from '@/types/IResult';
+import { IWorkspace } from '@/types/IWorkspace'
 
 export default createStore({
   state: {
