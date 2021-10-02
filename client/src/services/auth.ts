@@ -1,6 +1,6 @@
-import {IBearer} from '@/types/IBearer';
-import {IResult, IVoidResult} from '@/types/IResult';
-import axios, {AxiosResponse} from 'axios';
+import { IBearer } from '@/types/IBearer';
+import { IResult, IVoidResult } from '@/types/IResult';
+import axios, { AxiosResponse } from 'axios';
 
 const AUTH_SUFFIX = '/_auth';
 
