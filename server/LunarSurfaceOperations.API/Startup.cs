@@ -5,6 +5,7 @@ namespace LunarSurfaceOperations.API
     using System.Linq;
     using System.Text;
     using JetBrains.Annotations;
+    using LunarSurfaceOperations.API.Middlewares;
     using LunarSurfaceOperations.API.Settings;
     using LunarSurfaceOperations.Authentication;
     using LunarSurfaceOperations.Authentication.Contracts;
@@ -128,7 +129,8 @@ namespace LunarSurfaceOperations.API
 
             app.UseAuthentication();
             app.UseAuthorization();
-            
+            app.UseMiddleware<AuthenticationContextMiddleware>();
+
             app.UseEndpoints(
                 endpoints =>
                 {
