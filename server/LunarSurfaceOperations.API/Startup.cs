@@ -55,6 +55,7 @@ namespace LunarSurfaceOperations.API
             services.AddScoped<IUserFactory, UserFactory>();
             services.AddScoped<IUserService, UserService>();
             services.AddScoped<IUserRepository, UserRepository>();
+            services.AddScoped<IMessageFactory, MessageFactory>();
             services.AddScoped<IMessageService, MessageService>();
             services.AddScoped<IMessageRepository, MessageRepository>();
             services.AddScoped<IWorkspaceService, WorkspaceService>();

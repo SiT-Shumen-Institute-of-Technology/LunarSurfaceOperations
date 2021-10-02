@@ -1,6 +1,7 @@
 ﻿namespace LunarSurfaceOperations.Data.Repositories
 {
     using System;
+    using System.Collections.Generic;
     using System.Threading;
     using System.Threading.Tasks;
     using JetBrains.Annotations;
@@ -93,6 +94,29 @@
             {
                 var getEntity = await this.GetCollection().FindAsync(filter, findOptions, cancellationToken);
                 operationResult.Data = await getEntity.FirstOrDefaultAsync(cancellationToken);
+            }
+            catch (Exception e)
+            {
+                operationResult.AddException(e);
+            }
+
+            return operationResult;
+        }
+        
+        protected async Task<IOperationResult<IEnumerable<TEntity>>> GetManyAsync(FilterDefinition<TEntity> filter, FindOptions<TEntity> findOptions, CancellationToken cancellationToken)
+        {
+            var operationResult = new OperationResult<IEnumerable<TEntity>>();
+
+            operationResult.ValidateNotNull(filter);
+            operationResult.ValidateNotNull(findOptions);
+
+            if (operationResult.Success is false)
+                return operationResult;
+
+            try
+            {
+                var getEntity = await this.GetCollection().FindAsync(filter, findOptions, cancellationToken);
+                operationResult.Data = await getEntity.ToListAsync(cancellationToken);
             }
             catch (Exception e)
             {

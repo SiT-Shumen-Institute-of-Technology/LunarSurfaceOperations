@@ -1,5 +1,6 @@
 ﻿namespace LunarSurfaceOperations.Data.Repositories
 {
+    using System.Collections.Generic;
     using System.Threading;
     using System.Threading.Tasks;
     using JetBrains.Annotations;
@@ -16,6 +17,13 @@
         public MessageRepository([NotNull] IConnectionManager<IMongoDatabase> databaseConnection, [NotNull] IExhaustiveValidator<Message> validator)
             : base(databaseConnection, validator)
         {
+        }
+
+        public Task<IOperationResult<IEnumerable<Message>>> GetManyAsync(ObjectId workspaceId, CancellationToken cancellationToken)
+        {
+            var filters = Builders<Message>.Filter.Eq(m => m.WorkspaceId, workspaceId);
+            var findOptions = new FindOptions<Message>();
+            return this.GetManyAsync(filters, findOptions, cancellationToken);
         }
 
         public Task<IOperationResult<Message>> GetAsync(ObjectId workspaceId, ObjectId id, CancellationToken cancellationToken)

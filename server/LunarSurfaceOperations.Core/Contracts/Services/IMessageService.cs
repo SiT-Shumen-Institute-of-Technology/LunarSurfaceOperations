@@ -1,5 +1,6 @@
 ﻿namespace LunarSurfaceOperations.Core.Contracts.Services
 {
+    using System.Collections.Generic;
     using System.Threading;
     using System.Threading.Tasks;
     using LunarSurfaceOperations.Core.Contracts.OperativeModels.Layouts;
@@ -9,6 +10,7 @@
 
     public interface IMessageService
     {
+        Task<IOperationResult<IEnumerable<IMessageLayout>>> GetManyAsync(ObjectId workspaceId, CancellationToken cancellationToken);
         Task<IOperationResult<IMessageLayout>> CreateAsync(ObjectId workspaceId, IMessagePrototype prototype, CancellationToken cancellationToken);
     }
 }

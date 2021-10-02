@@ -1,6 +1,7 @@
 ﻿namespace LunarSurfaceOperations.Core.Services
 {
     using System;
+    using System.Collections.Generic;
     using System.Threading;
     using System.Threading.Tasks;
     using JetBrains.Annotations;
@@ -26,6 +27,22 @@
         {
             this._workspaceService = workspaceService ?? throw new ArgumentNullException(nameof(workspaceService));
             this._authenticationContext = authenticationContext ?? throw new ArgumentNullException(nameof(authenticationContext));
+        }
+
+        public async Task<IOperationResult<IEnumerable<IMessageLayout>>> GetManyAsync(ObjectId workspaceId, CancellationToken cancellationToken)
+        {
+            var operationResult = new OperationResult<IEnumerable<IMessageLayout>>();
+
+            var getMessages = await this.Repository.GetManyAsync(workspaceId, cancellationToken);
+            if (getMessages.Success is false)
+                return operationResult.AppendErrorMessages(getMessages);
+
+            var constructLayouts = this.ConstructManyLayouts(getMessages.Data);
+            if (constructLayouts.Success is false)
+                return operationResult.AppendErrorMessages(constructLayouts);
+
+            operationResult.Data = constructLayouts.Data;
+            return operationResult;
         }
 
         public Task<IOperationResult<IMessageLayout>> CreateAsync(ObjectId workspaceId, IMessagePrototype prototype, CancellationToken cancellationToken)
