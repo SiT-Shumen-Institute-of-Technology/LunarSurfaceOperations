@@ -10,7 +10,7 @@
         void AddErrorMessage(string errorMessage);
     }
     
-    public interface IOperationResult<TEntity>
+    public interface IOperationResult<TEntity> : IOperationResult
     {
         TEntity Data { get; set; }
     }

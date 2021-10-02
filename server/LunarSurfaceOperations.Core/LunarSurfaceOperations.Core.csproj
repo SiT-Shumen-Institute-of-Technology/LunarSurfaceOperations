@@ -8,4 +8,10 @@
       <PackageReference Include="JetBrains.Annotations" Version="2021.2.0" />
     </ItemGroup>
 
+    <ItemGroup>
+      <ProjectReference Include="..\LunarSurfaceOperations.Configuration\LunarSurfaceOperations.Configuration.csproj" />
+      <ProjectReference Include="..\LunarSurfaceOperations.Data\LunarSurfaceOperations.Data.csproj" />
+      <ProjectReference Include="..\LunarSurfaceOperations.Utilities\LunarSurfaceOperations.Utilities.csproj" />
+    </ItemGroup>
+
 </Project>
