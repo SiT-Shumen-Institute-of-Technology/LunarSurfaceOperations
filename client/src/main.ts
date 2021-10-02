@@ -1,5 +1,21 @@
 import { createApp } from 'vue'
+import axios from 'axios'
+
 import App from './App.vue'
 import store from './store'
+import router from './router'
+import { useAuthState } from './utils/globalUtils'
 
-createApp(App).use(store).mount('#app')
+axios.interceptors.request.use(req => {
+    const [ isSignedIn ] = useAuthState();
+    if (isSignedIn) {
+        const token = window.localStorage.getItem('JWT');
+        if (req.headers) {
+            req.headers['Authorization'] = `Bearer ${token}`; 
+        }
+    }
+
+    return req;
+});
+
+createApp(App).use(router).use(store).mount('#app')

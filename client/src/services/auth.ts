@@ -1,6 +1,5 @@
 import {IBearer} from '@/types/IBearer';
 import {IResult, IVoidResult} from '@/types/IResult';
-import {setSignedIn} from '@/utils/globalUtils';
 import axios, {AxiosResponse} from 'axios';
 
 const AUTH_SUFFIX = '/_auth';
@@ -12,7 +11,7 @@ export async function register(username: string, email: string, password: string
     };
 
     try {
-        await axios.post(`${process.env.VUE_APP_API_ENDPOINT}${AUTH_SUFFIX}/register`, {
+        await axios.post(`${process.env.VUE_APP_API_ENDPOINT}${AUTH_SUFFIX}/signup`, {
             username: username,
             email: email, 
             password: password
@@ -41,8 +40,6 @@ export async function signin(username: string, password: string): Promise<IResul
 
         result.success= true;
         result.data = response.data;
-
-        setSignedIn();
     } catch (error) {
         result.errors.push(error);
     }
