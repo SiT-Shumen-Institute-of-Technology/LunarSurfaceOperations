@@ -8,10 +8,15 @@
     using LunarSurfaceOperations.Utilities.OperationResults;
     using MongoDB.Bson;
 
-    public interface IWorkspaceService : IBaseService<IWorkspacePrototype, IWorkspaceLayout>
+    public interface IWorkspaceService
     {
         Task<IOperationResult<IEnumerable<IWorkspaceLayout>>> GetAllAsync(CancellationToken cancellationToken);
         Task<IOperationResult> UpdateMembersAsync(ObjectId workspaceId, IEnumerable<string> members, CancellationToken cancellationToken);
         Task<IOperationResult<IEnumerable<IUserLayout>>> GetMembersAsync(ObjectId workspaceId, CancellationToken cancellationToken);
+
+        Task<IOperationResult> ValidateIsAccessibleAsync(ObjectId workspaceId, CancellationToken cancellationToken);
+        
+        Task<IOperationResult<IWorkspaceLayout>> CreateAsync(IWorkspacePrototype prototype, CancellationToken cancellationToken);
+        Task<IOperationResult<IWorkspaceLayout>> UpdateAsync(ObjectId id, IWorkspacePrototype prototype, CancellationToken cancellationToken);
     }
 }

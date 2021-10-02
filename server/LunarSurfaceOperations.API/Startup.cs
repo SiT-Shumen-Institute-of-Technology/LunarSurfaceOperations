@@ -8,6 +8,7 @@ namespace LunarSurfaceOperations.API
     using LunarSurfaceOperations.API.Converters;
     using LunarSurfaceOperations.API.Factories;
     using LunarSurfaceOperations.API.Factories.Contracts;
+    using LunarSurfaceOperations.API.Hubs;
     using LunarSurfaceOperations.API.Middlewares;
     using LunarSurfaceOperations.API.Settings;
     using LunarSurfaceOperations.API.StartupTasks;
@@ -55,8 +56,12 @@ namespace LunarSurfaceOperations.API
             services.AddScoped<IUserFactory, UserFactory>();
             services.AddScoped<IUserService, UserService>();
             services.AddScoped<IUserRepository, UserRepository>();
+            services.AddScoped<IMessageFactory, MessageFactory>();
+            services.AddScoped<IMessageService, MessageService>();
+            services.AddScoped<IMessageRepository, MessageRepository>();
             services.AddScoped<IWorkspaceService, WorkspaceService>();
             services.AddScoped<IWorkspaceRepository, WorkspaceRepository>();
+            services.AddScoped<IWorkspaceFactory, WorkspaceFactory>();
             services.AddScoped<IAuthenticationContext, AuthenticationContext>();
             services.AddScoped(typeof(IExhaustiveValidator<>), typeof(ExhaustiveFluentValidator<>));
 
@@ -72,6 +77,8 @@ namespace LunarSurfaceOperations.API
                     {
                         options.JsonSerializerOptions.Converters.Add(new ObjectIdJsonConverter());
                     });
+            services.AddSignalR();
+            
             this.ConfigureAuthentication(services);
             this.ConfigureCors(services);
         }
@@ -155,6 +162,7 @@ namespace LunarSurfaceOperations.API
                 endpoints =>
                 {
                     endpoints.MapControllers();
+                    endpoints.MapHub<MessagesHub>("_hubs/messages");
                 });
         }
     }

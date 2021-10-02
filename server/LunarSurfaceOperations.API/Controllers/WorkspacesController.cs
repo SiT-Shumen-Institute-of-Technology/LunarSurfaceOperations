@@ -23,11 +23,15 @@
         private readonly IWorkspaceService _workspaceService;
 
         [NotNull]
+        private readonly IWorkspaceFactory _workspaceFactory;
+        
+        [NotNull]
         private readonly IUserFactory _userFactory;
 
-        public WorkspacesController([NotNull] IWorkspaceService workspaceService, [NotNull] IUserFactory userFactory)
+        public WorkspacesController([NotNull] IWorkspaceService workspaceService, [NotNull] IWorkspaceFactory workspaceFactory, [NotNull] IUserFactory userFactory)
         {
             this._workspaceService = workspaceService ?? throw new ArgumentNullException(nameof(workspaceService));
+            this._workspaceFactory = workspaceFactory ?? throw new ArgumentNullException(nameof(workspaceFactory));
             this._userFactory = userFactory ?? throw new ArgumentNullException(nameof(userFactory));
         }
 
@@ -56,7 +60,7 @@
 
             foreach (var workspaceLayout in getWorkspaces.Data.OrEmptyIfNull().IgnoreNullValues())
             {
-                var viewModel = new WorkspaceViewModel { Id = workspaceLayout.Id.ToString(), Name = workspaceLayout.Name, Description = workspaceLayout.Description };
+                var viewModel = this._workspaceFactory.ToViewModel(workspaceLayout);
                 viewModels.Add(viewModel);
             }
 

@@ -4,5 +4,6 @@
     {
         public const string Users = "Users";
         public const string Workspaces = "Workspaces";
+        public const string Messages = "Messages";
     }
 }

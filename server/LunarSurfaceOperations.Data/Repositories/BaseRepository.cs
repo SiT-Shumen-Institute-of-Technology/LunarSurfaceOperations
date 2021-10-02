@@ -1,6 +1,7 @@
 ﻿namespace LunarSurfaceOperations.Data.Repositories
 {
     using System;
+    using System.Collections.Generic;
     using System.Threading;
     using System.Threading.Tasks;
     using JetBrains.Annotations;
@@ -9,7 +10,6 @@
     using LunarSurfaceOperations.Resources;
     using LunarSurfaceOperations.Utilities.OperationResults;
     using LunarSurfaceOperations.Validation.Contracts;
-    using MongoDB.Bson;
     using MongoDB.Driver;
 
     public abstract class BaseRepository<TEntity> : IRepository<TEntity>
@@ -25,26 +25,6 @@
         }
 
         protected abstract string CollectionName { get; }
-
-        public async Task<IOperationResult<TEntity>> GetAsync(ObjectId id, CancellationToken cancellationToken)
-        {
-            var operationResult = new OperationResult<TEntity>();
-
-            try
-            {
-                var filter = Builders<TEntity>.Filter.Eq(x => x.Id, id);
-                var findOptions = new FindOptions<TEntity>();
-
-                var getEntity = await this.GetCollection().FindAsync(filter, findOptions, cancellationToken);
-                operationResult.Data = await getEntity.FirstOrDefaultAsync(cancellationToken);
-            }
-            catch (Exception e)
-            {
-                operationResult.AddException(e);
-            }
-
-            return operationResult;
-        }
 
         public async Task<IOperationResult> CreateAsync(TEntity entity, CancellationToken cancellationToken)
         {
@@ -100,13 +80,59 @@
             return operationResult;
         }
 
+        protected async Task<IOperationResult<TEntity>> GetAsync(FilterDefinition<TEntity> filter, FindOptions<TEntity> findOptions, CancellationToken cancellationToken)
+        {
+            var operationResult = new OperationResult<TEntity>();
+
+            operationResult.ValidateNotNull(filter);
+            operationResult.ValidateNotNull(findOptions);
+
+            if (operationResult.Success is false)
+                return operationResult;
+
+            try
+            {
+                var getEntity = await this.GetCollection().FindAsync(filter, findOptions, cancellationToken);
+                operationResult.Data = await getEntity.FirstOrDefaultAsync(cancellationToken);
+            }
+            catch (Exception e)
+            {
+                operationResult.AddException(e);
+            }
+
+            return operationResult;
+        }
+        
+        protected async Task<IOperationResult<IEnumerable<TEntity>>> GetManyAsync(FilterDefinition<TEntity> filter, FindOptions<TEntity> findOptions, CancellationToken cancellationToken)
+        {
+            var operationResult = new OperationResult<IEnumerable<TEntity>>();
+
+            operationResult.ValidateNotNull(filter);
+            operationResult.ValidateNotNull(findOptions);
+
+            if (operationResult.Success is false)
+                return operationResult;
+
+            try
+            {
+                var getEntity = await this.GetCollection().FindAsync(filter, findOptions, cancellationToken);
+                operationResult.Data = await getEntity.ToListAsync(cancellationToken);
+            }
+            catch (Exception e)
+            {
+                operationResult.AddException(e);
+            }
+
+            return operationResult;
+        }
+
         protected async Task<IOperationResult> UpdateAsync(FilterDefinition<TEntity> filter, UpdateDefinition<TEntity> updateDefinition, UpdateOptions options, CancellationToken cancellationToken)
         {
             var operationResult = new OperationResult();
-            
+
             operationResult.ValidateNotNull(filter);
             operationResult.ValidateNotNull(updateDefinition);
-            
+
             try
             {
                 var replaceOneResult = await this.GetCollection().UpdateOneAsync(filter, updateDefinition, options, cancellationToken);

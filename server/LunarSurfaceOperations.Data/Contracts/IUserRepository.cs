@@ -9,6 +9,7 @@ namespace LunarSurfaceOperations.Data.Contracts
 
     public interface IUserRepository : IRepository<User>
     {
+        Task<IOperationResult<User>> GetAsync(ObjectId id, CancellationToken cancellationToken);
         Task<IOperationResult<IEnumerable<User>>> GetManyAsync(IEnumerable<ObjectId> identifiers, CancellationToken cancellationToken);
         Task<IOperationResult<User>> GetByUsernameAsync(string username, CancellationToken cancellationToken);
         Task<IOperationResult<IEnumerable<User>>> GetManyByUsernameAsync(IEnumerable<string> username, CancellationToken cancellationToken);

@@ -6,7 +6,7 @@
     using System.Threading.Tasks;
     using JetBrains.Annotations;
     using LunarSurfaceOperations.Core.Contracts.OperativeModels.Layouts;
-    using LunarSurfaceOperations.Core.Contracts.Services;
+    using LunarSurfaceOperations.Core.Services.ScopeIdentification;
     using LunarSurfaceOperations.Data.Contracts;
     using LunarSurfaceOperations.Resources;
     using LunarSurfaceOperations.Utilities.OperationResults;
@@ -14,9 +14,10 @@
     using MongoDB.Bson;
     using Quantum.DMS.Utilities;
 
-    public abstract class BaseService<TRepository, TEntity, TPrototype, TLayout> : IBaseService<TPrototype, TLayout>
+    public abstract class BaseService<TRepository, TEntity, TScopeIdentification, TPrototype, TLayout>
         where TRepository : IRepository<TEntity>
         where TEntity : class, IEntity, new()
+        where TScopeIdentification : class, IScopeIdentification<TEntity>
         where TPrototype : class
         where TLayout : class, ILayout
     {
@@ -32,10 +33,11 @@
         [NotNull]
         protected IExhaustiveValidator<TPrototype> Validator { get; }
 
-        public async Task<IOperationResult<TLayout>> CreateAsync(TPrototype prototype, CancellationToken cancellationToken)
+        protected async Task<IOperationResult<TLayout>> CreateInternallyAsync(TScopeIdentification identification, TPrototype prototype, CancellationToken cancellationToken)
         {
             var operationResult = new OperationResult<TLayout>();
 
+            operationResult.ValidateNotNull(identification);
             operationResult.ValidateNotNull(prototype);
             if (operationResult.Success is false)
                 return operationResult;
@@ -44,7 +46,8 @@
             if (validationResult.Success is false)
                 return operationResult.AppendErrorMessages(validationResult);
 
-            var databaseModel = new TEntity { Id = ObjectId.GenerateNewId() };
+            var databaseModel = new TEntity {Id = ObjectId.GenerateNewId()};
+            identification.Apply(databaseModel);
 
             var enhanceDatabaseModel = this.EnhanceDatabaseModel(databaseModel, prototype);
             if (enhanceDatabaseModel.Success is false)
@@ -62,11 +65,12 @@
             return operationResult;
         }
 
-        public async Task<IOperationResult<TLayout>> UpdateAsync(ObjectId id, TPrototype prototype, CancellationToken cancellationToken)
+        protected async Task<IOperationResult<TLayout>> UpdateInternallyAsync(ObjectId id, TScopeIdentification identification, TPrototype prototype, CancellationToken cancellationToken)
         {
             var operationResult = new OperationResult<TLayout>();
 
             operationResult.ValidateNotNull(prototype);
+            operationResult.ValidateNotNull(identification);
             if (operationResult.Success is false)
                 return operationResult;
 
@@ -74,7 +78,7 @@
             if (validationResult.Success is false)
                 return operationResult.AppendErrorMessages(validationResult);
 
-            var getEntity = await this.GetEntityByIdAsync(id, cancellationToken);
+            var getEntity = await this.GetEntityByIdAsync(id, identification, cancellationToken);
             if (getEntity.Success is false)
                 return operationResult.AppendErrorMessages(getEntity);
 
@@ -125,6 +129,6 @@
 
         protected abstract IOperationResult<TLayout> ConstructLayout(TEntity entity);
 
-        protected abstract Task<IOperationResult<TEntity>> GetEntityByIdAsync(ObjectId entityId, CancellationToken cancellationToken);
+        protected abstract Task<IOperationResult<TEntity>> GetEntityByIdAsync(ObjectId entityId, TScopeIdentification identification, CancellationToken cancellationToken);
     }
 }

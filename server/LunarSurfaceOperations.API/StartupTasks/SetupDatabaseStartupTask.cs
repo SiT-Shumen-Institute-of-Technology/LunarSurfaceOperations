@@ -44,6 +44,11 @@
             {
                 await database.CreateCollectionAsync(CollectionNames.Workspaces, new CreateCollectionOptions(), cancellationToken);
             }
+
+            if (collectionsSet.Contains(CollectionNames.Messages) is false)
+            {
+                await database.CreateCollectionAsync(CollectionNames.Messages, new CreateCollectionOptions(), cancellationToken);
+            }
         }
     }
 }

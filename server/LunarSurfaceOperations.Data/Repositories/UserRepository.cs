@@ -21,6 +21,14 @@ namespace LunarSurfaceOperations.Data.Repositories
         {
         }
 
+        public Task<IOperationResult<User>> GetAsync(ObjectId id, CancellationToken cancellationToken)
+        {
+            var filter = Builders<User>.Filter.Eq(x => x.Id, id);
+            var findOptions = new FindOptions<User>();
+
+            return this.GetAsync(filter, findOptions, cancellationToken);
+        }
+
         public async Task<IOperationResult<User>> GetByUsernameAsync(string username, CancellationToken cancellationToken)
         {
             var operationResult = new OperationResult<User>();
