@@ -12,6 +12,8 @@ namespace LunarSurfaceOperations.API
     using LunarSurfaceOperations.Configuration.Authentication;
     using LunarSurfaceOperations.Configuration.Database;
     using LunarSurfaceOperations.Connections.Contracts;
+    using LunarSurfaceOperations.Core.Authentication;
+    using LunarSurfaceOperations.Core.Contracts.Authentication;
     using LunarSurfaceOperations.Core.Contracts.Services;
     using LunarSurfaceOperations.Core.Services;
     using LunarSurfaceOperations.Data.Connections;
@@ -47,6 +49,9 @@ namespace LunarSurfaceOperations.API
             services.AddSingleton<IPasswordHashingService, PasswordHashingService>();
             services.AddScoped<IUserService, UserService>();
             services.AddScoped<IUserRepository, UserRepository>();
+            services.AddScoped<IWorkspaceService, WorkspaceService>();
+            services.AddScoped<IWorkspaceRepository, WorkspaceRepository>();
+            services.AddScoped<IAuthenticationContext, AuthenticationContext>();
             services.AddScoped(typeof(IExhaustiveValidator<>), typeof(ExhaustiveFluentValidator<>));
 
             services.Configure<DatabaseSettings>(this._configuration.GetSection(DatabaseSettings.Section));
@@ -93,7 +98,7 @@ namespace LunarSurfaceOperations.API
                     var defaultPolicyBuilder = new AuthorizationPolicyBuilder();
                     defaultPolicyBuilder.RequireAuthenticatedUser();
                     var defaultPolicy = defaultPolicyBuilder.Build();
-
+            
                     options.DefaultPolicy = defaultPolicy;
                     options.FallbackPolicy = defaultPolicy;
                 });

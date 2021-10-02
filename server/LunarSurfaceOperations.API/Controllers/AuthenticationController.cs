@@ -55,7 +55,7 @@
             if (getAuthenticationData.Success is false)
                 return this.BadRequest(getAuthenticationData.ToString());
                 
-            var claims = new Dictionary<string, string>(capacity: 1) { [ClaimTypes.Sid] = getAuthenticationData.Data?.ToString() };
+            var claims = new Dictionary<string, string>(capacity: 1) { [ClaimTypes.Sid] = getAuthenticationData.Data?.Id.ToString() };
             var generateToken = this._tokenFactory.GenerateToken(claims);
             if (generateToken.Success is false)
                 return this.BadRequest(generateToken.ToString());

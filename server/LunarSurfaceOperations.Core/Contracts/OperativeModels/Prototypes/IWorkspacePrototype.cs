@@ -1,6 +1,6 @@
 ﻿namespace LunarSurfaceOperations.Core.Contracts.OperativeModels.Prototypes
 {
-    public interface IWorkflowPrototype
+    public interface IWorkspacePrototype
     {
         string Name { get; }
         string Description { get; }

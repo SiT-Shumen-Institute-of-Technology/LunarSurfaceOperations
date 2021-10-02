@@ -71,6 +71,7 @@
             if (constructLayout.Success is false)
                 operationResult.AppendErrorMessages(constructLayout);
 
+            operationResult.Data = constructLayout.Data;
             return operationResult;
         }
 
