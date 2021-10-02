@@ -5,6 +5,7 @@
     public interface IOperationResult
     {
         IReadOnlyCollection<string> Errors { get; }
+        bool Success { get; }
 
         void AddErrorMessage(string errorMessage);
     }
