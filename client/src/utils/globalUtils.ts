@@ -5,7 +5,7 @@ const currentlyLoggedUsername: Ref<string | null> = ref(null);
 
 export function useAuthState(): any {
     if (!isSignedIn.value) {
-        const isThereJWT = window.localStorage.getItem('JWT');
+        const isThereJWT = getJWT();
         isSignedIn.value = isThereJWT  ? true : false;
 
         currentlyLoggedUsername.value = window.localStorage.getItem('username');
@@ -27,4 +27,16 @@ export function useAuthState(): any {
         setSingnedOut,
         readonly(currentlyLoggedUsername)
     ]
+}
+
+export function getJWT(): string | null {
+    return window.localStorage.getItem('JWT');
+}
+
+export function setJWT(JWT: string): void {
+    window.localStorage.setItem('JWT', JWT);
+}
+
+export function removeJWT(): void {
+    window.localStorage.removeItem('JWT');
 }

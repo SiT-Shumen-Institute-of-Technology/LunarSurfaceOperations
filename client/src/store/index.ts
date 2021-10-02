@@ -1,10 +1,9 @@
-import { getWorkspaces } from '@/services/workspaces'
-import { IResult } from '@/types/IResult';
-import { IWorkspace } from '@/types/IWorkspace'
 import { createStore } from 'vuex'
-import { getWorkspaces } from '@/services/workspaces'
+
 import { IResult } from '@/types/IResult';
+import { getWorkspaces } from '@/services/workspaces'
 import { IWorkspace } from '@/types/IWorkspace'
+import {useAuthState} from '@/utils/globalUtils';
 
 export default createStore({
   state: {
@@ -17,8 +16,11 @@ export default createStore({
   },
   actions: {
     async fetchWorkspaces({ commit }) {
-        const fetchWorkspaces: IResult<IWorkspace[]> = await getWorkspaces();
-        commit('setWorkspaces', fetchWorkspaces.data);
+        const [isSignedUp] = useAuthState();
+        if (isSignedUp.value) {
+            const fetchWorkspaces: IResult<IWorkspace[]> = await getWorkspaces();
+            commit('setWorkspaces', fetchWorkspaces.data);
+        }
     }
   },
   modules: {

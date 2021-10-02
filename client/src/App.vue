@@ -23,37 +23,29 @@ export default defineComponent({
 </script>
 
 <style lang="less">
-    body {
+    html, body {
         margin: 0;
+        height: 100%;
     }
 
-    button {
-        background-color: unset;
-        outline: none;
-        border: 0;
-        padding: 20px;
-
-        &:hover {
-            background-color: lightblue;
-        }
+    #app {
+        height: 100%;
+        display: flex;
+        flex-flow: column;
     }
 
     .flex {
         display: flex;
     }
 
-
     .main-content {
         .flex;
+        flex: 1 1 auto;
+        overflow-y: scroll;
 
         .main-workspaces {
             flex: 20%;
             overflow-y: auto;
-
-            button {
-                width: 100%;
-                text-align: left;
-            }
         }
 
         .main-content-placeholder {
@@ -62,6 +54,18 @@ export default defineComponent({
             .main-workspaces ~ .main-content-placeholder {
                 flex: 80%;
             }
+        }
+    }
+
+    .link {
+        padding: 20px;
+        text-decoration: none;
+        color: black;
+        display: inline-block;
+        pointer-events: all;
+
+        &:hover {
+            background-color: lightblue;
         }
     }
 </style>

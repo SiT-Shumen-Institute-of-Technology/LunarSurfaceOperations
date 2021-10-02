@@ -1,9 +1,8 @@
 <template>
     <div class="register">
         <div class="register-wrapper">
-            <div class="error-wrapper" v-for="error in errors" :key="error">
-                <div class="error"> {{ error }} </div>
-            </div>
+            <ErrorFields :errors="errors" />
+
             <CustomInput type="text" label="Username" @update-value="updateUsername" />
 
             <CustomInput type="email" label="Email" @update-value="updateEmail"/>
@@ -22,10 +21,12 @@ import { defineComponent, Ref, ref } from 'vue'
 import { Router, useRouter } from 'vue-router';
 
 import CustomInput from '../components/CustomInput.vue';
+import ErrorFields from '../components/ErrorFields.vue';
 
 export default defineComponent({
     components: {
-        CustomInput
+        CustomInput,
+        ErrorFields
     },
     setup() {
         const username: Ref<string> = ref('');
@@ -52,7 +53,7 @@ export default defineComponent({
             if (registerResult.success) {
                 router.push('/signin');
             } else {
-                errors.value = registerResult.errors;
+                errors.value = [...new Set(registerResult.errors)];
             }
         }
         return {
