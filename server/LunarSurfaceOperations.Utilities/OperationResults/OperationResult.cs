@@ -2,6 +2,7 @@
 {
     using System.Collections.Generic;
     using System.Linq;
+    using System.Text;
 
     public class OperationResult : IOperationResult
     {
@@ -17,6 +18,16 @@
                 return;
 
             this._errorMessages.Add(errorMessage);
+        }
+
+        public override string ToString()
+        {
+            var stringBuilder = new StringBuilder();
+
+            foreach (var errorMessage in this._errorMessages)
+                stringBuilder.AppendLine(errorMessage);
+
+            return stringBuilder.ToString();
         }
     }
     

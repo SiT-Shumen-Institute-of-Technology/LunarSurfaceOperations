@@ -16,17 +16,17 @@
         where TEntity : class, IEntity, new()
         where TPrototype : class
     {
-        [NotNull]
-        private readonly TRepository _repository;
-
-        [NotNull]
-        private readonly IExhaustiveValidator<TPrototype> _validator;
-
         protected BaseService([NotNull] TRepository repository, [NotNull] IExhaustiveValidator<TPrototype> validator)
         {
-            this._repository = repository ?? throw new ArgumentNullException(nameof(repository));
-            this._validator = validator ?? throw new ArgumentNullException(nameof(validator));
+            this.Repository = repository ?? throw new ArgumentNullException(nameof(repository));
+            this.Validator = validator ?? throw new ArgumentNullException(nameof(validator));
         }
+
+        [NotNull]
+        protected TRepository Repository { get; }
+
+        [NotNull]
+        protected IExhaustiveValidator<TPrototype> Validator { get; }
 
         public async Task<IOperationResult<TLayout>> CreateAsync(TPrototype prototype, CancellationToken cancellationToken)
         {
@@ -36,7 +36,7 @@
             if (operationResult.Success is false)
                 return operationResult;
 
-            var validationResult = await this._validator.ValidateAsync(prototype, cancellationToken);
+            var validationResult = await this.Validator.ValidateAsync(prototype, cancellationToken);
             if (validationResult.Success is false)
                 return operationResult.AppendErrorMessages(validationResult);
 
@@ -46,7 +46,7 @@
             if (enhanceDatabaseModel.Success is false)
                 return operationResult.AppendErrorMessages(enhanceDatabaseModel);
 
-            var createResult = await this._repository.CreateAsync(databaseModel, cancellationToken);
+            var createResult = await this.Repository.CreateAsync(databaseModel, cancellationToken);
             if (createResult.Success is false)
                 return operationResult.AppendErrorMessages(createResult);
 
@@ -66,11 +66,11 @@
             if (operationResult.Success is false)
                 return operationResult;
 
-            var validationResult = await this._validator.ValidateAsync(prototype, cancellationToken);
+            var validationResult = await this.Validator.ValidateAsync(prototype, cancellationToken);
             if (validationResult.Success is false)
                 return operationResult.AppendErrorMessages(validationResult);
 
-            var getEntity = await this._repository.GetAsync(id, cancellationToken);
+            var getEntity = await this.Repository.GetAsync(id, cancellationToken);
             if (getEntity.Success is false)
                 return operationResult.AppendErrorMessages(getEntity);
 
@@ -85,7 +85,7 @@
             if (enhanceDatabaseModel.Success is false)
                 return operationResult.AppendErrorMessages(enhanceDatabaseModel);
 
-            var createResult = await this._repository.UpdateAsync(originalEntity, cancellationToken);
+            var createResult = await this.Repository.UpdateAsync(originalEntity, cancellationToken);
             if (createResult.Success is false)
                 operationResult.AppendErrorMessages(createResult);
 

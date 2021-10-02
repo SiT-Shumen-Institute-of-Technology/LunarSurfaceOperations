@@ -29,7 +29,7 @@
         public async Task<IOperationResult<TEntity>> GetAsync(ObjectId id, CancellationToken cancellationToken)
         {
             var operationResult = new OperationResult<TEntity>();
-
+            
             try
             {
                 var filter = Builders<TEntity>.Filter.Eq(x => x.Id, id);

@@ -1,10 +1,12 @@
 ﻿namespace LunarSurfaceOperations.Core.OperativeModels.Layouts
 {
     using LunarSurfaceOperations.Core.Contracts.OperativeModels.Layouts;
+    using MongoDB.Bson;
 
-    public record WorkflowLayout : IWorkflowLayout
+    public record WorkflowLayout : BaseLayout, IWorkflowLayout
     {
-        public WorkflowLayout(string name, string description)
+        public WorkflowLayout(ObjectId id, string name, string description)
+            : base(id)
         {
             this.Name = name;
             this.Description = description;
