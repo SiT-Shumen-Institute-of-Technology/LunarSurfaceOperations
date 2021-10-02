@@ -78,7 +78,7 @@
             if (validationResult.Success is false)
                 return operationResult.AppendErrorMessages(validationResult);
 
-            var getEntity = await this.GetEntityByIdAsync(id, identification, cancellationToken);
+            var getEntity = await this.GetEntityInternallyAsync(id, identification, cancellationToken);
             if (getEntity.Success is false)
                 return operationResult.AppendErrorMessages(getEntity);
 
@@ -129,6 +129,6 @@
 
         protected abstract IOperationResult<TLayout> ConstructLayout(TEntity entity);
 
-        protected abstract Task<IOperationResult<TEntity>> GetEntityByIdAsync(ObjectId entityId, TScopeIdentification identification, CancellationToken cancellationToken);
+        protected abstract Task<IOperationResult<TEntity>> GetEntityInternallyAsync(ObjectId entityId, TScopeIdentification identification, CancellationToken cancellationToken);
     }
 }

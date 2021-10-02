@@ -64,7 +64,7 @@
         {
             var operationResult = new OperationResult();
 
-            var getWorkspace = await this.GetEntityByIdAsync(workspaceId, cancellationToken);
+            var getWorkspace = await this.GetEntityInternallyAsync(workspaceId, cancellationToken);
             if (getWorkspace.Success is false)
                 return operationResult.AppendErrorMessages(getWorkspace);
 
@@ -96,7 +96,7 @@
         {
             var operationResult = new OperationResult<IEnumerable<IUserLayout>>();
 
-            var getWorkspace = await this.GetEntityByIdAsync(workspaceId, cancellationToken);
+            var getWorkspace = await this.GetEntityInternallyAsync(workspaceId, cancellationToken);
             if (getWorkspace.Success is false)
                 return operationResult.AppendErrorMessages(getWorkspace);
 
@@ -118,7 +118,7 @@
         {
             var operationResult = new OperationResult<bool>();
 
-            var getWorkspace = await this.GetEntityByIdAsync(workspaceId, cancellationToken);
+            var getWorkspace = await this.GetEntityInternallyAsync(workspaceId, cancellationToken);
             if (getWorkspace.Success is false)
                 return operationResult.AppendErrorMessages(getWorkspace);
 
@@ -160,10 +160,10 @@
             return operationResult;
         }
 
-        protected override Task<IOperationResult<Workspace>> GetEntityByIdAsync(ObjectId entityId, EmptyScopeIdentification<Workspace> identification, CancellationToken cancellationToken)
-            => this.GetEntityByIdAsync(entityId, cancellationToken);
+        protected override Task<IOperationResult<Workspace>> GetEntityInternallyAsync(ObjectId entityId, EmptyScopeIdentification<Workspace> identification, CancellationToken cancellationToken)
+            => this.GetEntityInternallyAsync(entityId, cancellationToken);
 
-        private async Task<IOperationResult<Workspace>> GetEntityByIdAsync(ObjectId entityId, CancellationToken cancellationToken)
+        private async Task<IOperationResult<Workspace>> GetEntityInternallyAsync(ObjectId entityId, CancellationToken cancellationToken)
         {
             var operationResult = new OperationResult<Workspace>();
 

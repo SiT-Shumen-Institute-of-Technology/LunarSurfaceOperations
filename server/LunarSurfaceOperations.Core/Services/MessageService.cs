@@ -77,7 +77,7 @@
             return operationResult;
         }
 
-        protected override async Task<IOperationResult<Message>> GetEntityByIdAsync(ObjectId entityId, WorkspaceScopeIdentification<Message> identification, CancellationToken cancellationToken)
+        protected override async Task<IOperationResult<Message>> GetEntityInternallyAsync(ObjectId entityId, WorkspaceScopeIdentification<Message> identification, CancellationToken cancellationToken)
         {
             var operationResult = new OperationResult<Message>();
 

@@ -61,7 +61,7 @@
         {
             var operationResult = new OperationResult<IUserLayout>();
 
-            var getUser = await this.GetEntityByIdAsync(userId, cancellationToken);
+            var getUser = await this.GetEntityInternallyAsync(userId, cancellationToken);
             if (getUser.Success is false)
                 return operationResult.AppendErrorMessages(getUser);
 
@@ -147,10 +147,10 @@
             return operationResult;
         }
 
-        protected override Task<IOperationResult<User>> GetEntityByIdAsync(ObjectId entityId, EmptyScopeIdentification<User> identification, CancellationToken cancellationToken)
-            => this.GetEntityByIdAsync(entityId, cancellationToken);
+        protected override Task<IOperationResult<User>> GetEntityInternallyAsync(ObjectId entityId, EmptyScopeIdentification<User> identification, CancellationToken cancellationToken)
+            => this.GetEntityInternallyAsync(entityId, cancellationToken);
 
-        private Task<IOperationResult<User>> GetEntityByIdAsync(ObjectId entityId, CancellationToken cancellationToken)
+        private Task<IOperationResult<User>> GetEntityInternallyAsync(ObjectId entityId, CancellationToken cancellationToken)
             => this.Repository.GetAsync(entityId, cancellationToken);
     }
 }
