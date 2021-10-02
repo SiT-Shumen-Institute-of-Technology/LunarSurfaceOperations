@@ -1,8 +1,8 @@
-﻿namespace LunarSurfaceOperations.Core.OperativeModels.Output
+﻿namespace LunarSurfaceOperations.Core.OperativeModels.Prototypes
 {
     using LunarSurfaceOperations.Core.Contracts.OperativeModels.Prototypes;
 
-    public class WorkflowPrototype : IWorkflowPrototype
+    public record WorkflowPrototype : IWorkflowPrototype
     {
         public WorkflowPrototype(string name, string description)
         {

@@ -1,8 +1,8 @@
-﻿namespace LunarSurfaceOperations.Core.OperativeModels.Output
+﻿namespace LunarSurfaceOperations.Core.OperativeModels.Prototypes
 {
     using LunarSurfaceOperations.Core.Contracts.OperativeModels.Prototypes;
 
-    public class UserPrototype : IUserPrototype
+    public record UserPrototype : IUserPrototype
     {
         public UserPrototype(string name, string email, string password)
         {
