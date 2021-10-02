@@ -7,6 +7,7 @@ namespace LunarSurfaceOperations.Data.Repositories
     using LunarSurfaceOperations.Connections.Contracts;
     using LunarSurfaceOperations.Data.Contracts;
     using LunarSurfaceOperations.Data.Models;
+    using LunarSurfaceOperations.Resources;
     using LunarSurfaceOperations.Utilities.OperationResults;
     using LunarSurfaceOperations.Validation.Contracts;
     using MongoDB.Driver;
@@ -42,6 +43,18 @@ namespace LunarSurfaceOperations.Data.Repositories
             return operationResult;
         }
 
-        protected override string CollectionName => "Users";
+        protected override string CollectionName => CollectionNames.Users;
+
+        protected override IOperationResult HandleModificationException(Exception exception)
+        {
+            if (exception is MongoWriteException { WriteError: { Category: ServerErrorCategory.DuplicateKey } })
+            {
+                var operationResult = new OperationResult();
+                operationResult.AddErrorMessage(WorkflowMessages.UsernameAlreadyTaken);
+                return operationResult;
+            }
+
+            return base.HandleModificationException(exception);
+        }
     }
 }

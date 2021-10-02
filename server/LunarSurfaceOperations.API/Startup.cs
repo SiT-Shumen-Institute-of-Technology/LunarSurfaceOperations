@@ -7,6 +7,7 @@ namespace LunarSurfaceOperations.API
     using JetBrains.Annotations;
     using LunarSurfaceOperations.API.Middlewares;
     using LunarSurfaceOperations.API.Settings;
+    using LunarSurfaceOperations.API.StartupTasks;
     using LunarSurfaceOperations.Authentication;
     using LunarSurfaceOperations.Authentication.Contracts;
     using LunarSurfaceOperations.Configuration.Authentication;
@@ -45,6 +46,7 @@ namespace LunarSurfaceOperations.API
         // For more information on how to configure your application, visit https://go.microsoft.com/fwlink/?LinkID=398940
         public void ConfigureServices(IServiceCollection services)
         {
+            services.AddSingleton<IStartupTask, SetupDatabaseStartupTask>();
             services.AddSingleton<IConnectionManager<IMongoDatabase>, MongoDatabaseConnection>();
             services.AddSingleton<IPasswordHashingService, PasswordHashingService>();
             services.AddScoped<IUserService, UserService>();

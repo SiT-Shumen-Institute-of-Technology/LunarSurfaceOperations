@@ -1,6 +1,7 @@
 ﻿namespace LunarSurfaceOperations.API.Controllers
 {
     using System;
+    using System.Collections.Generic;
     using System.Threading;
     using System.Threading.Tasks;
     using JetBrains.Annotations;
@@ -9,6 +10,7 @@
     using LunarSurfaceOperations.Core.OperativeModels.Prototypes;
     using LunarSurfaceOperations.Resources;
     using Microsoft.AspNetCore.Mvc;
+    using Quantum.DMS.Utilities;
 
     [ApiController]
     [Route("_workspaces")]
@@ -34,6 +36,24 @@
                 return this.BadRequest(createWorkspace.ToString());
 
             return this.Ok();
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> GetAllAsync(CancellationToken cancellationToken)
+        {
+            var getWorkspaces = await this._workspaceService.GetAllAsync(cancellationToken);
+            if (getWorkspaces.Success == false)
+                return this.Problem(getWorkspaces.ToString());
+
+            var viewModels = new List<WorkspaceViewModel>();
+
+            foreach (var workspaceLayout in getWorkspaces.Data.OrEmptyIfNull().IgnoreNullValues())
+            {
+                var viewModel = new WorkspaceViewModel { Id = workspaceLayout.Id.ToString(), Name = workspaceLayout.Name, Description = workspaceLayout.Description };
+                viewModels.Add(viewModel);
+            }
+
+            return this.Ok(viewModels);
         }
     }
 }
