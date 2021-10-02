@@ -5,11 +5,14 @@
     </PropertyGroup>
 
     <ItemGroup>
-      <PackageReference Include="JetBrains.Annotations" Version="2021.2.0" />
+        <PackageReference Include="JetBrains.Annotations" Version="2021.2.0" />
+        <PackageReference Include="Microsoft.IdentityModel.Tokens" Version="5.5.0" />
+        <PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="5.5.0" />
     </ItemGroup>
 
     <ItemGroup>
-      <ProjectReference Include="..\LunarSurfaceOperations.Utilities\LunarSurfaceOperations.Utilities.csproj" />
+        <ProjectReference Include="..\LunarSurfaceOperations.Configuration\LunarSurfaceOperations.Configuration.csproj" />
+        <ProjectReference Include="..\LunarSurfaceOperations.Utilities\LunarSurfaceOperations.Utilities.csproj" />
     </ItemGroup>
 
 </Project>

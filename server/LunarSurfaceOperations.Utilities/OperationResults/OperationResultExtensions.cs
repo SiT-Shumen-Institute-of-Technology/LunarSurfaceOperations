@@ -14,14 +14,16 @@
             operationResult.AddErrorMessage(exception.Message);
         }
 
-        public static void ValidateNotNull<T>(this IOperationResult operationResult, T value)
+        public static void ValidateNotNull<T>(this IOperationResult operationResult, T value, string errorMessage = null)
             where T : class
         {
-            if (operationResult is null)
+            if (operationResult is null || value is not null)
                 return;
 
-            if (value is null)
-                operationResult.AddErrorMessage(ValidationMessages.InvalidNullArgument);
+            if (string.IsNullOrWhiteSpace(errorMessage))
+                errorMessage = ValidationMessages.InvalidStringArgument;
+
+            operationResult.AddErrorMessage(errorMessage);
         }
 
         public static void ValidateNotNullOrWhitespace(this IOperationResult operationResult, string value)
@@ -38,7 +40,7 @@
         {
             if (originalOperationResult is null)
                 return default;
-            
+
             foreach (var operationResult in operationResultsToCombine.OrEmptyIfNull().IgnoreNullValues())
                 foreach (var errorMessage in operationResult.Errors.OrEmptyIfNull().IgnoreNullOrWhitespaceValues())
                     originalOperationResult.AddErrorMessage(errorMessage);

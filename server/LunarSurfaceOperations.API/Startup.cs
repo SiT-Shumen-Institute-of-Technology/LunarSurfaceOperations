@@ -4,6 +4,7 @@ namespace LunarSurfaceOperations.API
     using JetBrains.Annotations;
     using LunarSurfaceOperations.Authentication;
     using LunarSurfaceOperations.Authentication.Contracts;
+    using LunarSurfaceOperations.Configuration.Authentication;
     using LunarSurfaceOperations.Configuration.Database;
     using LunarSurfaceOperations.Connections.Contracts;
     using LunarSurfaceOperations.Core.Contracts.Services;
@@ -35,11 +36,14 @@ namespace LunarSurfaceOperations.API
         {
             services.AddSingleton<IConnectionManager<IMongoDatabase>, MongoDatabaseConnection>();
             services.AddSingleton<IPasswordHashingService, PasswordHashingService>();
+            services.AddSingleton<IAuthenticationTokenFactory, AuthenticationTokenFactory>();
             services.AddScoped<IUserService, UserService>();
             services.AddScoped<IUserRepository, UserRepository>();
             services.AddScoped(typeof(IExhaustiveValidator<>), typeof(ExhaustiveFluentValidator<>));
 
             services.Configure<DatabaseSettings>(this._configuration.GetSection(DatabaseSettings.Section));
+            services.Configure<AuthenticationTokenGenerationSettings>(this._configuration.GetSection(AuthenticationTokenGenerationSettings.Section));
+            services.Configure<AuthenticationTokenValidationSettings>(this._configuration.GetSection(AuthenticationTokenValidationSettings.Section));
 
             services.AddControllers();
         }

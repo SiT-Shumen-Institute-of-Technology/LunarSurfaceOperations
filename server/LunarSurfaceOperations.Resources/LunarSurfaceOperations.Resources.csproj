@@ -25,6 +25,14 @@
         <Generator>ResXFileCodeGenerator</Generator>
         <LastGenOutput>WorkflowMessages.bg.Designer.cs</LastGenOutput>
       </EmbeddedResource>
+      <EmbeddedResource Update="AuthenticationMessages.en.resx">
+        <Generator>ResXFileCodeGenerator</Generator>
+        <LastGenOutput>AuthenicationMessages.en.Designer.cs</LastGenOutput>
+      </EmbeddedResource>
+      <EmbeddedResource Update="AuthenticationMessages.bg.resx">
+        <Generator>ResXFileCodeGenerator</Generator>
+        <LastGenOutput>AuthenicationMessages.en.Designer.cs</LastGenOutput>
+      </EmbeddedResource>
     </ItemGroup>
 
 </Project>
