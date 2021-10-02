@@ -5,7 +5,6 @@
     using System.Threading.Tasks;
     using JetBrains.Annotations;
     using LunarSurfaceOperations.Core.Contracts.Services;
-    using Microsoft.AspNetCore.Mvc;
     using Microsoft.AspNetCore.SignalR;
     using MongoDB.Bson;
 
@@ -19,7 +18,7 @@
             this._workspaceService = workspaceService ?? throw new ArgumentNullException(nameof(workspaceService));
         }
 
-        public async Task ConnectToWorkspaceAsync(ObjectId workspaceId, CancellationToken cancellationToken)
+        public async Task ConnectToWorkspace(ObjectId workspaceId, CancellationToken cancellationToken)
         {
             var validateAccessibleWorkspace = await this._workspaceService.ValidateIsAccessibleAsync(workspaceId, cancellationToken);
             if (validateAccessibleWorkspace.Success is false)
@@ -28,6 +27,6 @@
             await this.Groups.AddToGroupAsync(this.Context.ConnectionId, workspaceId.ToString(), cancellationToken);
         }
 
-        public async Task DisconnectFromWorkspaceAsync(ObjectId workspaceId, CancellationToken cancellationToken) => await this.Groups.RemoveFromGroupAsync(this.Context.ConnectionId, workspaceId.ToString(), cancellationToken);
+        public async Task DisconnectFromWorkspace(ObjectId workspaceId, CancellationToken cancellationToken) => await this.Groups.RemoveFromGroupAsync(this.Context.ConnectionId, workspaceId.ToString(), cancellationToken);
     }
 }

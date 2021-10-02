@@ -61,6 +61,7 @@ namespace LunarSurfaceOperations.API
             services.AddScoped<IMessageRepository, MessageRepository>();
             services.AddScoped<IWorkspaceService, WorkspaceService>();
             services.AddScoped<IWorkspaceRepository, WorkspaceRepository>();
+            services.AddScoped<IWorkspaceFactory, WorkspaceFactory>();
             services.AddScoped<IAuthenticationContext, AuthenticationContext>();
             services.AddScoped(typeof(IExhaustiveValidator<>), typeof(ExhaustiveFluentValidator<>));
 
