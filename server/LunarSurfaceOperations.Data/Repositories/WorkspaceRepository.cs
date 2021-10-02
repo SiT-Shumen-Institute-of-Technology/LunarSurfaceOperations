@@ -18,6 +18,6 @@ namespace LunarSurfaceOperations.Data.Repositories
         {
         }
 
-        protected override string CollectionName => "Workspaces"
+        protected override string CollectionName => "Workspaces";
     }
 }
