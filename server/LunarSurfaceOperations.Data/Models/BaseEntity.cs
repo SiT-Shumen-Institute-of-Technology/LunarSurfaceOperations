@@ -1,12 +1,13 @@
 ﻿namespace LunarSurfaceOperations.Data.Models
 {
+    using LunarSurfaceOperations.Data.Contracts;
     using MongoDB.Bson;
     using MongoDB.Bson.Serialization.Attributes;
 
-    public class BaseEntity
+    public class BaseEntity : IEntity
     {
         [BsonId]
-        public ObjectId ObjectId { get; set; }
+        public ObjectId Id { get; set; }
         
         [BsonExtraElements]
         public BsonDocument ExtraElements { get; set; }

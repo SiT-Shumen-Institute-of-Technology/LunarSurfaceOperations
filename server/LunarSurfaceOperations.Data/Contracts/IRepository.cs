@@ -6,6 +6,7 @@
     using MongoDB.Bson;
 
     public interface IRepository<TEntity>
+        where TEntity : IEntity
     {
         Task<IOperationResult<TEntity>> GetAsync(ObjectId id, CancellationToken cancellationToken);
         Task<IOperationResult> CreateAsync(TEntity entity, CancellationToken cancellationToken);

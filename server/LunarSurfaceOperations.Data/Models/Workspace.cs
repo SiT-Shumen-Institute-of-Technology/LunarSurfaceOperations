@@ -2,11 +2,11 @@
 {
     using MongoDB.Bson.Serialization.Attributes;
 
-    public class Workspaces : BaseEntity
+    public class Workspace : BaseEntity
     {
         [BsonElement("n")]
         public string Name { get; set; }
-        
+
         [BsonElement("d")]
         [BsonIgnoreIfDefault]
         public string Description { get; set; }
