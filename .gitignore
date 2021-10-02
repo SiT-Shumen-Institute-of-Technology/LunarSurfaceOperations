@@ -24,4 +24,5 @@ pnpm-debug.log*
 # C#
 [Bb]in/
 [Oo]bj/
+.vs/
 *.DotSettings.user
