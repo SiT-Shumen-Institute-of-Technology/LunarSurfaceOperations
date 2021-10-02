@@ -19,6 +19,7 @@ namespace LunarSurfaceOperations.API
     using LunarSurfaceOperations.Validation;
     using LunarSurfaceOperations.Validation.Contracts;
     using Microsoft.AspNetCore.Authentication.JwtBearer;
+    using Microsoft.AspNetCore.Authorization;
     using Microsoft.AspNetCore.Builder;
     using Microsoft.AspNetCore.Hosting;
     using Microsoft.Extensions.Configuration;
@@ -85,20 +86,15 @@ namespace LunarSurfaceOperations.API
                         };
                     });
 
-            const string defaultAuthorizationScheme = "DEFAULT_AUTHORIZATION";
             services.AddAuthorization(
                 options =>
                 {
-                    options.AddPolicy(
-                        defaultAuthorizationScheme,
-                        defaultPolicyOptions =>
-                        {
-                            // The default authorization policy will require an authenticated user with the default authentication scheme.
-                            defaultPolicyOptions.RequireAuthenticatedUser();
-                        });
+                    var defaultPolicyBuilder = new AuthorizationPolicyBuilder();
+                    defaultPolicyBuilder.RequireAuthenticatedUser();
+                    var defaultPolicy = defaultPolicyBuilder.Build();
 
-                    options.DefaultPolicy = options.GetPolicy(defaultAuthorizationScheme);
-                    options.FallbackPolicy = options.GetPolicy(defaultAuthorizationScheme);
+                    options.DefaultPolicy = defaultPolicy;
+                    options.FallbackPolicy = defaultPolicy;
                 });
         }
 
@@ -119,6 +115,7 @@ namespace LunarSurfaceOperations.API
                             corsPolicyOptions.WithOrigins(corsSettings.AllowedOrigins.OrEmptyIfNull().ToArray());
                             corsPolicyOptions.WithHeaders(corsSettings.Headers.OrEmptyIfNull().ToArray());
                             corsPolicyOptions.WithMethods(corsSettings.Methods.OrEmptyIfNull().ToArray());
+                            corsPolicyOptions.AllowCredentials();
                         });
                 });
         }
@@ -126,7 +123,12 @@ namespace LunarSurfaceOperations.API
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
+            app.UseCors();
             app.UseRouting();
+
+            app.UseAuthentication();
+            app.UseAuthorization();
+            
             app.UseEndpoints(
                 endpoints =>
                 {
