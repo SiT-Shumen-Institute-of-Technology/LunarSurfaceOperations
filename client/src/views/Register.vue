@@ -1,6 +1,9 @@
 <template>
     <div class="register">
         <div class="register-wrapper">
+            <div class="error-wrapper" v-for="error in errors" :key="error">
+                <div class="error"> {{ error }} </div>
+            </div>
             <CustomInput type="text" label="Username" @update-value="updateUsername" />
 
             <CustomInput type="email" label="Email" @update-value="updateEmail"/>
@@ -28,6 +31,7 @@ export default defineComponent({
         const username: Ref<string> = ref('');
         const email: Ref<string> = ref('');
         const password: Ref<string> = ref('');
+        const errors: Ref<string[]> = ref([]);
         const router: Router = useRouter();
 
         const updateUsername = (userInput: string) => {
@@ -43,18 +47,20 @@ export default defineComponent({
         }
 
         const submit = async () => {
-            console.log(username.value, email.value, password.value);
             const registerResult: IVoidResult = await register(username.value, email.value, password.value);
 
             if (registerResult.success) {
                 router.push('/signin');
+            } else {
+                errors.value = registerResult.errors;
             }
         }
         return {
             updateUsername,
             updatePassword,
             updateEmail,
-            submit
+            submit,
+            errors
         }
     }
 })

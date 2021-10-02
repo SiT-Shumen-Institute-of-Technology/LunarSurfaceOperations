@@ -18,9 +18,11 @@ export async function register(username: string, email: string, password: string
         });
 
         result.success = true;
-    } catch(error) {
-        result.errors.push(error);
+    } catch({ response }) {
+        const s = response.data.split('\n');
+        result.errors = s;
     }
+
     return result;
 }
 
