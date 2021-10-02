@@ -5,10 +5,9 @@
     using LunarSurfaceOperations.Utilities.OperationResults;
     using MongoDB.Bson;
 
-    public interface IRepository<TEntity>
+    public interface IRepository<in TEntity>
         where TEntity : class, IEntity
     {
-        Task<IOperationResult<TEntity>> GetAsync(ObjectId id, CancellationToken cancellationToken);
         Task<IOperationResult> CreateAsync(TEntity entity, CancellationToken cancellationToken);
         Task<IOperationResult> UpdateAsync(TEntity entity, CancellationToken cancellationToken);
     }

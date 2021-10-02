@@ -11,6 +11,7 @@
     using LunarSurfaceOperations.Core.Contracts.OperativeModels.Prototypes;
     using LunarSurfaceOperations.Core.Contracts.Services;
     using LunarSurfaceOperations.Core.OperativeModels.Layouts;
+    using LunarSurfaceOperations.Core.Services.ScopeIdentification;
     using LunarSurfaceOperations.Data.Contracts;
     using LunarSurfaceOperations.Data.Models;
     using LunarSurfaceOperations.Resources;
@@ -19,7 +20,7 @@
     using MongoDB.Bson;
     using Quantum.DMS.Utilities;
 
-    public class WorkspaceService : BaseService<IWorkspaceRepository, Workspace, IWorkspacePrototype, IWorkspaceLayout>, IWorkspaceService
+    public class WorkspaceService : BaseService<IWorkspaceRepository, Workspace, EmptyScopeIdentification<Workspace>, IWorkspacePrototype, IWorkspaceLayout>, IWorkspaceService
     {
         private readonly IAuthenticationContext _authenticationContext;
         private readonly IUserService _userService;
@@ -113,6 +114,25 @@
             return operationResult;
         }
 
+        public async Task<IOperationResult> ValidateIsAccessibleAsync(ObjectId workspaceId, CancellationToken cancellationToken)
+        {
+            var operationResult = new OperationResult<bool>();
+
+            var getWorkspace = await this.GetEntityByIdAsync(workspaceId, cancellationToken);
+            if (getWorkspace.Success is false)
+                return operationResult.AppendErrorMessages(getWorkspace);
+
+            var workspace = getWorkspace.Data;
+            operationResult.ValidateNotNull(workspace, WorkflowMessages.EntityNotFound);
+            return operationResult;
+        }
+
+        public Task<IOperationResult<IWorkspaceLayout>> CreateAsync(IWorkspacePrototype prototype, CancellationToken cancellationToken)
+            => this.CreateInternallyAsync(new EmptyScopeIdentification<Workspace>(), prototype, cancellationToken);
+
+        public Task<IOperationResult<IWorkspaceLayout>> UpdateAsync(ObjectId id, IWorkspacePrototype prototype, CancellationToken cancellationToken)
+            => this.UpdateInternallyAsync(id, new EmptyScopeIdentification<Workspace>(), prototype, cancellationToken);
+
         protected override IOperationResult EnhanceDatabaseModel(Workspace databaseModel, IWorkspacePrototype prototype)
         {
             var operationResult = new OperationResult();
@@ -140,7 +160,10 @@
             return operationResult;
         }
 
-        protected override async Task<IOperationResult<Workspace>> GetEntityByIdAsync(ObjectId entityId, CancellationToken cancellationToken)
+        protected override Task<IOperationResult<Workspace>> GetEntityByIdAsync(ObjectId entityId, EmptyScopeIdentification<Workspace> identification, CancellationToken cancellationToken)
+            => this.GetEntityByIdAsync(entityId, cancellationToken);
+
+        private async Task<IOperationResult<Workspace>> GetEntityByIdAsync(ObjectId entityId, CancellationToken cancellationToken)
         {
             var operationResult = new OperationResult<Workspace>();
 
@@ -149,8 +172,7 @@
                 return operationResult.AppendErrorMessages(getWorkspace);
 
             var workspace = getWorkspace.Data;
-            operationResult.ValidateNotNull(workspace, WorkflowMessages.EntityNotFound);
-            if (operationResult.Success is false)
+            if (workspace is null)
                 return operationResult;
 
             var currentUserId = this._authenticationContext.CurrentUser.Id;

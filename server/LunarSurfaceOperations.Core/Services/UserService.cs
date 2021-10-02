@@ -12,15 +12,15 @@
     using LunarSurfaceOperations.Core.Contracts.Services;
     using LunarSurfaceOperations.Core.OperativeModels.Authentication;
     using LunarSurfaceOperations.Core.OperativeModels.Layouts;
+    using LunarSurfaceOperations.Core.Services.ScopeIdentification;
     using LunarSurfaceOperations.Data.Contracts;
     using LunarSurfaceOperations.Data.Models;
     using LunarSurfaceOperations.Resources;
     using LunarSurfaceOperations.Utilities.OperationResults;
     using LunarSurfaceOperations.Validation.Contracts;
     using MongoDB.Bson;
-    using Quantum.DMS.Utilities;
 
-    public class UserService : BaseService<IUserRepository, User, IUserPrototype, IUserLayout>, IUserService
+    public class UserService : BaseService<IUserRepository, User, EmptyScopeIdentification<User>, IUserPrototype, IUserLayout>, IUserService
     {
         private readonly IPasswordHashingService _hashingService;
 
@@ -109,6 +109,12 @@
             return operationResult;
         }
 
+        public Task<IOperationResult<IUserLayout>> CreateAsync(IUserPrototype prototype, CancellationToken cancellationToken)
+            => this.CreateInternallyAsync(new EmptyScopeIdentification<User>(), prototype, cancellationToken);
+
+        public Task<IOperationResult<IUserLayout>> UpdateAsync(ObjectId id, IUserPrototype prototype, CancellationToken cancellationToken) 
+            => this.UpdateInternallyAsync(id, new EmptyScopeIdentification<User>(), prototype, cancellationToken);
+
         protected override IOperationResult EnhanceDatabaseModel(User databaseModel, IUserPrototype prototype)
         {
             var operationResult = new OperationResult();
@@ -141,6 +147,10 @@
             return operationResult;
         }
 
-        protected override Task<IOperationResult<User>> GetEntityByIdAsync(ObjectId entityId, CancellationToken cancellationToken) => this.Repository.GetAsync(entityId, cancellationToken);
+        protected override Task<IOperationResult<User>> GetEntityByIdAsync(ObjectId entityId, EmptyScopeIdentification<User> identification, CancellationToken cancellationToken)
+            => this.GetEntityByIdAsync(entityId, cancellationToken);
+
+        private Task<IOperationResult<User>> GetEntityByIdAsync(ObjectId entityId, CancellationToken cancellationToken)
+            => this.Repository.GetAsync(entityId, cancellationToken);
     }
 }
