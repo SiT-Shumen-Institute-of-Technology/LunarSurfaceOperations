@@ -1,27 +1,64 @@
 <template>
-  <img alt="Vue logo" src="./assets/logo.png">
-  <HelloWorld msg="Welcome to Your Vue.js + TypeScript App"/>
+    <Nav />
+    <div class="main-content">
+        <div class="main-content-placeholder">
+            <router-view/>
+        </div>
+    </div>
 </template>
 
 <script lang="ts">
-import { defineComponent } from 'vue';
-import HelloWorld from './components/HelloWorld.vue';
+import { defineComponent } from 'vue'
+
+import Nav from './components/layout/Nav.vue';
 
 export default defineComponent({
-  name: 'App',
-  components: {
-    HelloWorld
-  }
-});
+    components: {
+        Nav
+    },
+})
 </script>
 
 <style lang="less">
-#app {
-  font-family: Avenir, Helvetica, Arial, sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  text-align: center;
-  color: #2c3e50;
-  margin-top: 60px;
-}
+    body {
+        margin: 0;
+    }
+
+    button {
+        background-color: unset;
+        outline: none;
+        border: 0;
+        padding: 20px;
+
+        &:hover {
+            background-color: lightblue;
+        }
+    }
+
+    .flex {
+        display: flex;
+    }
+
+
+    .main-content {
+        .flex;
+
+        .main-workspaces {
+            flex: 20%;
+            overflow-y: auto;
+
+            button {
+                width: 100%;
+                text-align: left;
+            }
+        }
+
+        .main-content-placeholder {
+            flex: 100%;
+
+            .main-workspaces ~ .main-content-placeholder {
+                flex: 80%;
+            }
+        }
+    }
 </style>
