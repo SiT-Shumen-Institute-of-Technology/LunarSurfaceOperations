@@ -1,9 +1,12 @@
-﻿namespace LunarSurfaceOperations.Data.Models
+namespace LunarSurfaceOperations.Data.Models
 {
     using MongoDB.Bson.Serialization.Attributes;
 
     public class User : BaseEntity
     {
+        [BsonElement("e")]
+        public string Email { get; set; }
+
         [BsonElement("u")]
         public string Username { get; set; }
 

@@ -5,7 +5,13 @@
     </PropertyGroup>
 
     <ItemGroup>
-      <PackageReference Include="JetBrains.Annotations" Version="2021.2.0" />
+	  <PackageReference Include="JetBrains.Annotations" Version="2021.2.0" />
+      <PackageReference Include="FluentValidation" Version="10.3.3" />
+        
+    </ItemGroup>
+
+    <ItemGroup>
+      <ProjectReference Include="..\LunarSurfaceOperations.Data\LunarSurfaceOperations.Data.csproj" />
     </ItemGroup>
 
 </Project>
