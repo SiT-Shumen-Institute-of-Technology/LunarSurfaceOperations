@@ -25,6 +25,7 @@ export default defineComponent({
 
 <style lang="less" scoped>
     .field {
+        margin-bottom: 20px;
         .custom-input {
             width: 100%;
         }

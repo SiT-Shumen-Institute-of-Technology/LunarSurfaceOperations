@@ -1,5 +1,8 @@
 <template>
     <nav class="main-nav">
+        <div class="nav-left">
+            <router-link v-if="isSignedIn" class="link" to="/workspace_create">+ Add workspace</router-link>
+        </div>
         <div class="nav-right">
             <span v-if="isSignedIn"> {{ username }} </span>
             <router-link v-if="!isSignedIn" class="link" to="/signin">Sign In</router-link>
@@ -19,6 +22,7 @@ export default defineComponent({
         const [ isSignedIn, _, setSingnedOut, username ] = useAuthState();
         const signOut = () => {
             window.localStorage.removeItem('JWT');
+            window.localStorage.removeItem('username');
             setSingnedOut();
         }
 
@@ -36,7 +40,7 @@ export default defineComponent({
         display: flex;
 
         border-bottom: 1px solid black;
-        justify-content: flex-end;
+        justify-content: space-between;
 
         .link {
             padding: 20px;

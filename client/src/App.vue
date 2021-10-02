@@ -1,6 +1,7 @@
 <template>
     <Nav />
     <div class="main-content">
+        <SidePane />
         <div class="main-content-placeholder">
             <router-view/>
         </div>
@@ -11,10 +12,12 @@
 import { defineComponent } from 'vue'
 
 import Nav from './components/layout/Nav.vue';
+import SidePane from './components/layout/SidePane.vue';
 
 export default defineComponent({
     components: {
-        Nav
+        Nav,
+        SidePane
     },
 })
 </script>
