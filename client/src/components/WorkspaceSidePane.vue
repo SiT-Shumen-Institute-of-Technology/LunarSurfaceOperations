@@ -1,6 +1,5 @@
 <template>
-    <button @click="redirect"
-        class="description-button" :title="description"> {{ name }} </button>
+    <router-link :to="{ name: 'Workspace', params: { id } }">{{ name }}</router-link>
 </template>
 
 <script lang="ts">

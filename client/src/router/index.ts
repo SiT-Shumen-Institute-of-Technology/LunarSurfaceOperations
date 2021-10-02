@@ -30,8 +30,14 @@ const routes: Array<RouteRecordRaw> = [
   },
   {
       path: '/workspace_create',
-      name: 'Create workspace',
+      name: 'Workspace_add',
       component: () => import('../views/Workspace_add.vue'),
+      beforeEnter: authRestrict
+  },
+  {
+      path: '/workspace/:id',
+      name: 'Workspace',
+      component: () => import('../views/Workspace.vue'),
       beforeEnter: authRestrict
   },
 ]
