@@ -9,6 +9,7 @@ namespace LunarSurfaceOperations.Data.Contracts
 
     public interface IWorkspaceRepository : IRepository<Workspace>
     {
-        Task<IOperationResult<IEnumerable<Workspace>>> GetForUserAsync(ObjectId userId, CancellationToken cancellationToken);
+        Task<IOperationResult<IEnumerable<Workspace>>> GetByUserAsync(ObjectId userId, CancellationToken cancellationToken);
+        Task<IOperationResult> UpdateMembers(ObjectId workspaceId, IEnumerable<ObjectId> members, CancellationToken cancellationToken);
     }
 }

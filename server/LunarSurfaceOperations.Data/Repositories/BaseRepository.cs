@@ -89,7 +89,27 @@
                 var replaceOptions = new ReplaceOptions();
 
                 var replaceOneResult = await this.GetCollection().ReplaceOneAsync(filter, entity, replaceOptions, cancellationToken);
+                if (replaceOneResult.MatchedCount != 1)
+                    operationResult.AddErrorMessage(WorkflowMessages.UpdateHasNoMatches);
+            }
+            catch (Exception e)
+            {
+                operationResult.AppendErrorMessages(this.HandleModificationException(e));
+            }
 
+            return operationResult;
+        }
+
+        protected async Task<IOperationResult> UpdateAsync(FilterDefinition<TEntity> filter, UpdateDefinition<TEntity> updateDefinition, UpdateOptions options, CancellationToken cancellationToken)
+        {
+            var operationResult = new OperationResult();
+            
+            operationResult.ValidateNotNull(filter);
+            operationResult.ValidateNotNull(updateDefinition);
+            
+            try
+            {
+                var replaceOneResult = await this.GetCollection().UpdateOneAsync(filter, updateDefinition, options, cancellationToken);
                 if (replaceOneResult.MatchedCount != 1)
                     operationResult.AddErrorMessage(WorkflowMessages.UpdateHasNoMatches);
             }

@@ -4,8 +4,8 @@
 
     public class WorkspaceViewModel
     {
-        public string Id { [UsedImplicitly] get; set; }
-        public string Name { [UsedImplicitly] get; set; }
-        public string Description { [UsedImplicitly] get; set; }
+        public string Id { [UsedImplicitly] get; init; }
+        public string Name { [UsedImplicitly] get; init; }
+        public string Description { [UsedImplicitly] get; init; }
     }
 }

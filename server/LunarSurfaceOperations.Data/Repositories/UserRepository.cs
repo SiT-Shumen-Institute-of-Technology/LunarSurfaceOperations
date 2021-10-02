@@ -1,6 +1,7 @@
 namespace LunarSurfaceOperations.Data.Repositories
 {
     using System;
+    using System.Collections.Generic;
     using System.Threading;
     using System.Threading.Tasks;
     using JetBrains.Annotations;
@@ -10,6 +11,7 @@ namespace LunarSurfaceOperations.Data.Repositories
     using LunarSurfaceOperations.Resources;
     using LunarSurfaceOperations.Utilities.OperationResults;
     using LunarSurfaceOperations.Validation.Contracts;
+    using MongoDB.Bson;
     using MongoDB.Driver;
 
     public class UserRepository : BaseRepository<User>, IUserRepository
@@ -34,6 +36,46 @@ namespace LunarSurfaceOperations.Data.Repositories
 
                 var getEntity = await this.GetCollection().FindAsync(filter, findOptions, cancellationToken);
                 operationResult.Data = await getEntity.FirstOrDefaultAsync(cancellationToken);
+            }
+            catch (Exception e)
+            {
+                operationResult.AddException(e);
+            }
+
+            return operationResult;
+        }
+
+        public async Task<IOperationResult<IEnumerable<User>>> GetManyByUsernameAsync(IEnumerable<string> usernames, CancellationToken cancellationToken)
+        {
+            var operationResult = new OperationResult<IEnumerable<User>>();
+
+            try
+            {
+                var filter = Builders<User>.Filter.In(x => x.Username, usernames);
+                var findOptions = new FindOptions<User>();
+
+                var getEntity = await this.GetCollection().FindAsync(filter, findOptions, cancellationToken);
+                operationResult.Data = await getEntity.ToListAsync(cancellationToken);
+            }
+            catch (Exception e)
+            {
+                operationResult.AddException(e);
+            }
+
+            return operationResult;
+        }
+
+        public async Task<IOperationResult<IEnumerable<User>>> GetManyAsync(IEnumerable<ObjectId> identifiers, CancellationToken cancellationToken)
+        {
+            var operationResult = new OperationResult<IEnumerable<User>>();
+
+            try
+            {
+                var filter = Builders<User>.Filter.In(x => x.Id, identifiers);
+                var findOptions = new FindOptions<User>();
+
+                var getEntity = await this.GetCollection().FindAsync(filter, findOptions, cancellationToken);
+                operationResult.Data = await getEntity.ToListAsync(cancellationToken);
             }
             catch (Exception e)
             {

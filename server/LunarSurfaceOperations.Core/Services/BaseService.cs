@@ -1,6 +1,7 @@
 ﻿namespace LunarSurfaceOperations.Core.Services
 {
     using System;
+    using System.Collections.Generic;
     using System.Threading;
     using System.Threading.Tasks;
     using JetBrains.Annotations;
@@ -11,6 +12,7 @@
     using LunarSurfaceOperations.Utilities.OperationResults;
     using LunarSurfaceOperations.Validation.Contracts;
     using MongoDB.Bson;
+    using Quantum.DMS.Utilities;
 
     public abstract class BaseService<TRepository, TEntity, TPrototype, TLayout> : IBaseService<TPrototype, TLayout>
         where TRepository : IRepository<TEntity>
@@ -72,7 +74,7 @@
             if (validationResult.Success is false)
                 return operationResult.AppendErrorMessages(validationResult);
 
-            var getEntity = await this.Repository.GetAsync(id, cancellationToken);
+            var getEntity = await this.GetEntityByIdAsync(id, cancellationToken);
             if (getEntity.Success is false)
                 return operationResult.AppendErrorMessages(getEntity);
 
@@ -87,9 +89,9 @@
             if (enhanceDatabaseModel.Success is false)
                 return operationResult.AppendErrorMessages(enhanceDatabaseModel);
 
-            var createResult = await this.Repository.UpdateAsync(originalEntity, cancellationToken);
-            if (createResult.Success is false)
-                operationResult.AppendErrorMessages(createResult);
+            var updateResult = await this.Repository.UpdateAsync(originalEntity, cancellationToken);
+            if (updateResult.Success is false)
+                operationResult.AppendErrorMessages(updateResult);
 
             var constructLayout = this.ConstructLayout(originalEntity);
             if (constructLayout.Success is false)
@@ -97,11 +99,32 @@
 
             operationResult.Data = constructLayout.Data;
             return operationResult;
-            
+        }
+
+        protected IOperationResult<IEnumerable<TLayout>> ConstructManyLayouts(IEnumerable<TEntity> entities)
+        {
+            var operationResult = new OperationResult<IEnumerable<TLayout>>();
+
+            var layouts = new List<TLayout>();
+            foreach (var entity in entities.OrEmptyIfNull().IgnoreNullValues())
+            {
+                var constructLayout = this.ConstructLayout(entity);
+                if (constructLayout.Success is false)
+                    return operationResult.AppendErrorMessages(constructLayout);
+
+                var layout = constructLayout.Data;
+                if (layout is not null)
+                    layouts.Add(layout);
+            }
+
+            operationResult.Data = layouts;
+            return operationResult;
         }
 
         protected abstract IOperationResult EnhanceDatabaseModel(TEntity databaseModel, TPrototype prototype);
 
         protected abstract IOperationResult<TLayout> ConstructLayout(TEntity entity);
+
+        protected abstract Task<IOperationResult<TEntity>> GetEntityByIdAsync(ObjectId entityId, CancellationToken cancellationToken);
     }
 }

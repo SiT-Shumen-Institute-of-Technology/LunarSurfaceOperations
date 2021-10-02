@@ -5,6 +5,9 @@ namespace LunarSurfaceOperations.API
     using System.Linq;
     using System.Text;
     using JetBrains.Annotations;
+    using LunarSurfaceOperations.API.Converters;
+    using LunarSurfaceOperations.API.Factories;
+    using LunarSurfaceOperations.API.Factories.Contracts;
     using LunarSurfaceOperations.API.Middlewares;
     using LunarSurfaceOperations.API.Settings;
     using LunarSurfaceOperations.API.StartupTasks;
@@ -49,6 +52,7 @@ namespace LunarSurfaceOperations.API
             services.AddSingleton<IStartupTask, SetupDatabaseStartupTask>();
             services.AddSingleton<IConnectionManager<IMongoDatabase>, MongoDatabaseConnection>();
             services.AddSingleton<IPasswordHashingService, PasswordHashingService>();
+            services.AddScoped<IUserFactory, UserFactory>();
             services.AddScoped<IUserService, UserService>();
             services.AddScoped<IUserRepository, UserRepository>();
             services.AddScoped<IWorkspaceService, WorkspaceService>();
@@ -58,7 +62,16 @@ namespace LunarSurfaceOperations.API
 
             services.Configure<DatabaseSettings>(this._configuration.GetSection(DatabaseSettings.Section));
 
-            services.AddControllers();
+            services.AddControllers(
+                    options =>
+                    {
+                        options.ModelBinderProviders.Insert(0, new ObjectIdModelBinderProvider());
+                    })
+                .AddJsonOptions(
+                    options =>
+                    {
+                        options.JsonSerializerOptions.Converters.Add(new ObjectIdJsonConverter());
+                    });
             this.ConfigureAuthentication(services);
             this.ConfigureCors(services);
         }
@@ -100,7 +113,7 @@ namespace LunarSurfaceOperations.API
                     var defaultPolicyBuilder = new AuthorizationPolicyBuilder();
                     defaultPolicyBuilder.RequireAuthenticatedUser();
                     var defaultPolicy = defaultPolicyBuilder.Build();
-            
+
                     options.DefaultPolicy = defaultPolicy;
                     options.FallbackPolicy = defaultPolicy;
                 });
