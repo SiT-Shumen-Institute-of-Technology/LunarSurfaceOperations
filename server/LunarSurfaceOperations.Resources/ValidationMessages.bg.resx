@@ -21,4 +21,7 @@
     <data name="InvalidNullArgument" xml:space="preserve">
         <value>Задължителен параметър не е предоставен.</value>
     </data>
+    <data name="InvalidStringArgument" xml:space="preserve">
+        <value>Задължителен текстов параметър не е предоставен.</value>
+    </data>
 </root>

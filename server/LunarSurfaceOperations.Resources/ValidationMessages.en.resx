@@ -21,4 +21,7 @@
     <data name="InvalidNullArgument" xml:space="preserve">
         <value>A required argument is not provided.</value>
     </data>
+    <data name="InvalidStringArgument" xml:space="preserve">
+        <value>A required text argument is not provided.</value>
+    </data>
 </root>

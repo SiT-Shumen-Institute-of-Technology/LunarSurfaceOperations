@@ -2,7 +2,7 @@
 {
     public interface IUserPrototype
     {
-        string Name { get; }
+        string Username { get; }
         string Email { get; }
         string Password { get; }
     }

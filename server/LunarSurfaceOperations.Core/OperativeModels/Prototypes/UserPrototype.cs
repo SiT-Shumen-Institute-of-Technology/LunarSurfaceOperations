@@ -6,12 +6,12 @@
     {
         public UserPrototype(string name, string email, string password)
         {
-            this.Name = name;
+            this.Username = name;
             this.Email = email;
             this.Password = password;
         }
 
-        public string Name { get; }
+        public string Username { get; }
         public string Email { get; }
         public string Password { get; }
     }

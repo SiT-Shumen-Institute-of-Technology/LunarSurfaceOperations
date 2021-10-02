@@ -41,12 +41,20 @@
                 return operationResult.AppendErrorMessages(validationResult);
 
             var databaseModel = new TEntity { Id = ObjectId.GenerateNewId() };
-            this.EnhanceDatabaseModel(databaseModel, prototype);
+
+            var enhanceDatabaseModel = this.EnhanceDatabaseModel(databaseModel, prototype);
+            if (enhanceDatabaseModel.Success)
+                return operationResult.AppendErrorMessages(enhanceDatabaseModel);
 
             var createResult = await this._repository.CreateAsync(databaseModel, cancellationToken);
             if (createResult.Success == false)
-                operationResult.AppendErrorMessages(createResult);
-                
+                return operationResult.AppendErrorMessages(createResult);
+
+            var constructLayout = this.ConstructLayout(databaseModel);
+            if (constructLayout.Success == false)
+                return operationResult.AppendErrorMessages(constructLayout);
+
+            operationResult.Data = constructLayout.Data;
             return operationResult;
         }
 
@@ -73,16 +81,25 @@
                 return operationResult;
             }
 
-            this.EnhanceDatabaseModel(originalEntity, prototype);
+            var enhanceDatabaseModel = this.EnhanceDatabaseModel(originalEntity, prototype);
+            if (enhanceDatabaseModel.Success)
+                return operationResult.AppendErrorMessages(enhanceDatabaseModel);
 
             var createResult = await this._repository.UpdateAsync(originalEntity, cancellationToken);
             if (createResult.Success == false)
                 operationResult.AppendErrorMessages(createResult);
-                
+
+            var constructLayout = this.ConstructLayout(originalEntity);
+            if (constructLayout.Success == false)
+                return operationResult.AppendErrorMessages(constructLayout);
+
+            operationResult.Data = constructLayout.Data;
             return operationResult;
             
         }
 
-        protected abstract void EnhanceDatabaseModel(TEntity databaseModel, TPrototype prototype);
+        protected abstract IOperationResult EnhanceDatabaseModel(TEntity databaseModel, TPrototype prototype);
+
+        protected abstract IOperationResult<TLayout> ConstructLayout(TEntity entity);
     }
 }

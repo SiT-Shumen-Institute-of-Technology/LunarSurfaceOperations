@@ -9,9 +9,6 @@
     </ItemGroup>
 
     <ItemGroup>
-      <ProjectReference Include="..\LunarSurfaceOperations.Authentication\LunarSurfaceOperations.Authentication.csproj" />
-      <ProjectReference Include="..\LunarSurfaceOperations.Configuration\LunarSurfaceOperations.Configuration.csproj" />
-      <ProjectReference Include="..\LunarSurfaceOperations.Data\LunarSurfaceOperations.Data.csproj" />
       <ProjectReference Include="..\LunarSurfaceOperations.Utilities\LunarSurfaceOperations.Utilities.csproj" />
     </ItemGroup>
 

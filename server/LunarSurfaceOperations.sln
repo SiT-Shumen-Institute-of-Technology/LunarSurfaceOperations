@@ -16,6 +16,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LunarSurfaceOperations.Conf
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LunarSurfaceOperations.Validation", "LunarSurfaceOperations.Validation\LunarSurfaceOperations.Validation.csproj", "{6303D17B-D0D5-4548-B7AE-AA0F0443C102}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LunarSurfaceOperations.Authentication", "LunarSurfaceOperations.Authentication\LunarSurfaceOperations.Authentication.csproj", "{503BEB1C-FE94-49E9-8CE8-C67013C2EF78}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -54,5 +56,9 @@ Global
 		{6303D17B-D0D5-4548-B7AE-AA0F0443C102}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{6303D17B-D0D5-4548-B7AE-AA0F0443C102}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{6303D17B-D0D5-4548-B7AE-AA0F0443C102}.Release|Any CPU.Build.0 = Release|Any CPU
+		{503BEB1C-FE94-49E9-8CE8-C67013C2EF78}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{503BEB1C-FE94-49E9-8CE8-C67013C2EF78}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{503BEB1C-FE94-49E9-8CE8-C67013C2EF78}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{503BEB1C-FE94-49E9-8CE8-C67013C2EF78}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal
