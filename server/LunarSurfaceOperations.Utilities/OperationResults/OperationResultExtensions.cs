@@ -24,6 +24,15 @@
                 operationResult.AddErrorMessage(ValidationMessages.InvalidNullArgument);
         }
 
+        public static void ValidateNotNullOrWhitespace(this IOperationResult operationResult, string value)
+        {
+            if (operationResult is null)
+                return;
+
+            if (string.IsNullOrWhiteSpace(value))
+                operationResult.AddErrorMessage(ValidationMessages.InvalidStringArgument);
+        }
+
         public static T AppendErrorMessages<T>(this T originalOperationResult, params IOperationResult[] operationResultsToCombine)
             where T : IOperationResult
         {

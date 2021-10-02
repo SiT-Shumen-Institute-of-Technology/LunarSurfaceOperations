@@ -1,14 +1,8 @@
-namespace LunarSurfaceOperations.Data.Repositories
+namespace LunarSurfaceOperations.Data.Contracts
 {
-    using System;
-    using System.Collections.Generic;
-    using System.Linq;
-    using System.Text;
-    using System.Threading.Tasks;
-    using LunarSurfaceOperations.Data.Contracts;
     using LunarSurfaceOperations.Data.Models;
 
-    interface IUserRepository : IRepository<User>
+    public interface IUserRepository : IRepository<User>
     {
     }
 }
