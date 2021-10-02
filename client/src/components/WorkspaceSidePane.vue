@@ -1,6 +1,5 @@
 <template>
-    <button @click="redirect"
-        class="description-button" :title="description"> {{ name }} </button>
+    <router-link class="link" :to="{ name: 'Workspace', params: { id } }">{{ name }}</router-link>
 </template>
 
 <script lang="ts">
@@ -27,4 +26,9 @@ export default defineComponent({
 </script>
 
 <style lang="less" scoped>
+    .link {
+        width: -webkit-fill-available;
+        width: fill-available;
+        width: -moz-available;
+    }
 </style>

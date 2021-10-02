@@ -1,5 +1,5 @@
 import { IBearer } from '@/types/IBearer';
-import { IResult, IVoidResult } from '@/types/IResult';
+import { IResult, IVoidResult, generateErrorMessages } from '@/types/IResult';
 import axios, { AxiosResponse } from 'axios';
 
 const AUTH_SUFFIX = '/_auth';
@@ -19,8 +19,7 @@ export async function register(username: string, email: string, password: string
 
         result.success = true;
     } catch({ response }) {
-        const s = response.data.split('\n');
-        result.errors = s;
+        result.errors = generateErrorMessages(response.data);
     }
 
     return result;
@@ -42,8 +41,8 @@ export async function signin(username: string, password: string): Promise<IResul
 
         result.success= true;
         result.data = response.data;
-    } catch (error) {
-        result.errors.push(error);
+    } catch ({ response }) {
+        result.errors = generateErrorMessages(response.data);
     }
 
     return result;

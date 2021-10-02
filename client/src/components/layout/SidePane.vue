@@ -9,7 +9,7 @@
 
 <script lang="ts">
 import { useStore } from 'vuex';
-import { defineComponent, onMounted, computed } from 'vue'
+import { defineComponent, computed, onBeforeMount } from 'vue'
 
 import { useAuthState } from '@/utils/globalUtils'
 import WorkspaceSidePane from '@/components/WorkspaceSidePane.vue';
@@ -22,7 +22,7 @@ export default defineComponent({
         const [isSignedUp] = useAuthState();
         const store = useStore();
 
-        onMounted(async () => {
+        onBeforeMount(async () => {
             store.dispatch('fetchWorkspaces');
         });
 
