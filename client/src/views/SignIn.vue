@@ -20,12 +20,14 @@ import { IResult } from '@/types/IResult';
 import { IBearer } from '@/types/IBearer';
 
 import CustomInput from '../components/CustomInput.vue';
+import { useStore } from 'vuex';
 
 export default defineComponent({
     components: {
         CustomInput
     },
     setup() {
+        const store = useStore();
         const username: Ref<string> = ref('');
         const password: Ref<string> = ref('');
         const router: Router = useRouter();
@@ -39,7 +41,6 @@ export default defineComponent({
         }
 
         const submit = async () => {
-            console.log(username.value, password.value);
             const registerResult: IResult<IBearer> = await signin(username.value, password.value);
 
             if (registerResult.success && registerResult.data.token) {
@@ -47,6 +48,7 @@ export default defineComponent({
                 window.localStorage.setItem('JWT', registerResult.data.token);
                 window.localStorage.setItem('username', username.value);
                 setSignedIn(username.value);
+                store.dispatch('fetchWorkspaces');
                 router.push('/home');
             }
         }
