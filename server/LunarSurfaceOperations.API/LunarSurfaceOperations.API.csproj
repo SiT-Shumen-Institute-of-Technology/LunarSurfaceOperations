@@ -6,7 +6,8 @@
     </PropertyGroup>
 
     <ItemGroup>
-      <PackageReference Include="JetBrains.Annotations" Version="2021.2.0" />
+        <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="3.1.17" />
+        <PackageReference Include="JetBrains.Annotations" Version="2021.2.0" />
     </ItemGroup>
 
     <ItemGroup>

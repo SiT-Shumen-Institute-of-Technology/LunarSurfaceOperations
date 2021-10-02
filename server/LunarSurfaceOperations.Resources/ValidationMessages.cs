@@ -4,10 +4,8 @@
 
     public static class ValidationMessages
     {
-        private static readonly ResourceManager _resourceManager = ResourceManagerBuilder.CreateResourceManager("ValidationMessages");
-
-        public static string InvalidNullArgument => _resourceManager.GetString(nameof(InvalidNullArgument));
-        public static string InvalidStringArgument => _resourceManager.GetString(nameof(InvalidStringArgument));
-        public static string InvalidRequest => _resourceManager.GetString(nameof(InvalidRequest));
+        public static string InvalidNullArgument => "A required argument is not provided.";
+        public static string InvalidStringArgument => "A required text argument is not provided.";
+        public static string InvalidRequest =>  "The sent request is not in a valid format.";
     }
 }

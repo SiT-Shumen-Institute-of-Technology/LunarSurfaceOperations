@@ -2,9 +2,9 @@
 {
     using LunarSurfaceOperations.Core.Contracts.OperativeModels.Prototypes;
 
-    public record WorkflowPrototype : IWorkflowPrototype
+    public record WorkspacePrototype : IWorkspacePrototype
     {
-        public WorkflowPrototype(string name, string description)
+        public WorkspacePrototype(string name, string description)
         {
             this.Name = name;
             this.Description = description;

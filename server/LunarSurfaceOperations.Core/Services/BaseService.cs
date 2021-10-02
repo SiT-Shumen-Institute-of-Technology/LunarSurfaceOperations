@@ -4,6 +4,7 @@
     using System.Threading;
     using System.Threading.Tasks;
     using JetBrains.Annotations;
+    using LunarSurfaceOperations.Core.Contracts.OperativeModels.Layouts;
     using LunarSurfaceOperations.Core.Contracts.Services;
     using LunarSurfaceOperations.Data.Contracts;
     using LunarSurfaceOperations.Resources;
@@ -15,6 +16,7 @@
         where TRepository : IRepository<TEntity>
         where TEntity : class, IEntity, new()
         where TPrototype : class
+        where TLayout : class, ILayout
     {
         protected BaseService([NotNull] TRepository repository, [NotNull] IExhaustiveValidator<TPrototype> validator)
         {

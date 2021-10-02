@@ -8,31 +8,4 @@
       <PackageReference Include="JetBrains.Annotations" Version="2021.2.0" />
     </ItemGroup>
 
-    <ItemGroup>
-      <EmbeddedResource Update="ValidationMessages.en.resx">
-        <Generator>ResXFileCodeGenerator</Generator>
-        <LastGenOutput>ValidationMessages.en.Designer.cs</LastGenOutput>
-      </EmbeddedResource>
-      <EmbeddedResource Update="ValidationMessages.bg.resx">
-        <Generator>ResXFileCodeGenerator</Generator>
-        <LastGenOutput>ValidationMessages.bg.Designer.cs</LastGenOutput>
-      </EmbeddedResource>
-      <EmbeddedResource Update="WorkflowMessages.bg.resx">
-        <Generator>ResXFileCodeGenerator</Generator>
-        <LastGenOutput>WorkflowMessages.bg.Designer.cs</LastGenOutput>
-      </EmbeddedResource>
-      <EmbeddedResource Update="WorkflowMessages.en.resx">
-        <Generator>ResXFileCodeGenerator</Generator>
-        <LastGenOutput>WorkflowMessages.bg.Designer.cs</LastGenOutput>
-      </EmbeddedResource>
-      <EmbeddedResource Update="AuthenticationMessages.en.resx">
-        <Generator>ResXFileCodeGenerator</Generator>
-        <LastGenOutput>AuthenicationMessages.en.Designer.cs</LastGenOutput>
-      </EmbeddedResource>
-      <EmbeddedResource Update="AuthenticationMessages.bg.resx">
-        <Generator>ResXFileCodeGenerator</Generator>
-        <LastGenOutput>AuthenicationMessages.en.Designer.cs</LastGenOutput>
-      </EmbeddedResource>
-    </ItemGroup>
-
 </Project>

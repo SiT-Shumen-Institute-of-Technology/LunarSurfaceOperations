@@ -16,6 +16,7 @@
     using LunarSurfaceOperations.Resources;
     using LunarSurfaceOperations.Utilities.OperationResults;
     using LunarSurfaceOperations.Validation.Contracts;
+    using MongoDB.Bson;
 
     public class UserService : BaseService<IUserRepository, User, IUserPrototype, IUserLayout>, IUserService
     {
@@ -51,6 +52,26 @@
             else
                 operationResult.Data = new AuthenticationData(user.Id);
 
+            return operationResult;
+        }
+
+        public async Task<OperationResult<IUserLayout>> GetAsync(ObjectId userId, CancellationToken cancellationToken)
+        {
+            var operationResult = new OperationResult<IUserLayout>();
+
+            var getUser = await this.Repository.GetAsync(userId, cancellationToken);
+            if (getUser.Success is false)
+                return operationResult.AppendErrorMessages(getUser);
+
+            var user = getUser.Data;
+            if (user is null)
+                return operationResult;
+
+            var constructLayout = this.ConstructLayout(getUser.Data);
+            if (constructLayout.Success is false)
+                operationResult.AppendErrorMessages(constructLayout);
+
+            operationResult.Data = constructLayout.Data;
             return operationResult;
         }
 
