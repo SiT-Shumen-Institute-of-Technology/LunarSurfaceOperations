@@ -4,6 +4,7 @@ namespace LunarSurfaceOperations.API
     using System.Collections.Generic;
     using System.Linq;
     using System.Text;
+    using System.Threading.Tasks;
     using JetBrains.Annotations;
     using LunarSurfaceOperations.API.Converters;
     using LunarSurfaceOperations.API.Factories;
@@ -124,6 +125,16 @@ namespace LunarSurfaceOperations.API
                             IssuerSigningKeys = AsSecurityKeys(tokenValidationSettings.IssuerSigningKeys),
                             TokenDecryptionKeys = AsSecurityKeys(tokenValidationSettings.DecryptionKeys),
                         };
+                        
+                        options.Events = new JwtBearerEvents
+                        {
+                            OnMessageReceived = context =>
+                            {
+                                if (context.Request.Path.ToString().StartsWith(RouteConstants.HubsPrefix))
+                                    context.Token = context.Request.Query["access_token"];
+                                return Task.CompletedTask;
+                            },
+                        };
                     });
 
             services.AddAuthorization(
@@ -179,7 +190,7 @@ namespace LunarSurfaceOperations.API
                 endpoints =>
                 {
                     endpoints.MapControllers();
-                    endpoints.MapHub<MessagesHub>("_hubs/messages");
+                    endpoints.MapHub<MessagesHub>($"{RouteConstants.HubsPrefix}/messages");
                 });
         }
     }
