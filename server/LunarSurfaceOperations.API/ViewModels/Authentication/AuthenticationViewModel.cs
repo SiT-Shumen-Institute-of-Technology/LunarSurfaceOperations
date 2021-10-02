@@ -4,6 +4,6 @@
 
     public class AuthenticationViewModel
     {
-        public string Token { [UsedImplicitly] get; set; }
+        public string Token { [UsedImplicitly] get; init; }
     }
 }

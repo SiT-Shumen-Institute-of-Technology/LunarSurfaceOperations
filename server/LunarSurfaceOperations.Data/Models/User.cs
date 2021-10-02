@@ -1,4 +1,4 @@
-namespace LunarSurfaceOperations.Data.Models
+﻿namespace LunarSurfaceOperations.Data.Models
 {
     using MongoDB.Bson.Serialization.Attributes;
 

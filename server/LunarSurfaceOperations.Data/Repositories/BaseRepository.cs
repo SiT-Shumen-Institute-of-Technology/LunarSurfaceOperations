@@ -23,13 +23,13 @@
             this._databaseConnection = databaseConnection ?? throw new ArgumentNullException(nameof(databaseConnection));
             this._validator = validator ?? throw new ArgumentNullException(nameof(validator));
         }
-        
+
         protected abstract string CollectionName { get; }
 
         public async Task<IOperationResult<TEntity>> GetAsync(ObjectId id, CancellationToken cancellationToken)
         {
             var operationResult = new OperationResult<TEntity>();
-            
+
             try
             {
                 var filter = Builders<TEntity>.Filter.Eq(x => x.Id, id);
@@ -49,7 +49,7 @@
         public async Task<IOperationResult> CreateAsync(TEntity entity, CancellationToken cancellationToken)
         {
             var operationResult = new OperationResult();
-            
+
             operationResult.ValidateNotNull(entity);
             if (operationResult.Success is false)
                 return operationResult;
@@ -65,16 +65,16 @@
             }
             catch (Exception e)
             {
-                operationResult.AddException(e);
+                operationResult.AppendErrorMessages(this.HandleModificationException(e));
             }
-            
+
             return operationResult;
         }
 
         public async Task<IOperationResult> UpdateAsync(TEntity entity, CancellationToken cancellationToken)
         {
             var operationResult = new OperationResult();
-            
+
             operationResult.ValidateNotNull(entity);
             if (operationResult.Success is false)
                 return operationResult;
@@ -89,15 +89,45 @@
                 var replaceOptions = new ReplaceOptions();
 
                 var replaceOneResult = await this.GetCollection().ReplaceOneAsync(filter, entity, replaceOptions, cancellationToken);
-                
                 if (replaceOneResult.MatchedCount != 1)
                     operationResult.AddErrorMessage(WorkflowMessages.UpdateHasNoMatches);
             }
             catch (Exception e)
             {
-                operationResult.AddException(e);
+                operationResult.AppendErrorMessages(this.HandleModificationException(e));
             }
+
+            return operationResult;
+        }
+
+        protected async Task<IOperationResult> UpdateAsync(FilterDefinition<TEntity> filter, UpdateDefinition<TEntity> updateDefinition, UpdateOptions options, CancellationToken cancellationToken)
+        {
+            var operationResult = new OperationResult();
             
+            operationResult.ValidateNotNull(filter);
+            operationResult.ValidateNotNull(updateDefinition);
+            
+            try
+            {
+                var replaceOneResult = await this.GetCollection().UpdateOneAsync(filter, updateDefinition, options, cancellationToken);
+                if (replaceOneResult.MatchedCount != 1)
+                    operationResult.AddErrorMessage(WorkflowMessages.UpdateHasNoMatches);
+            }
+            catch (Exception e)
+            {
+                operationResult.AppendErrorMessages(this.HandleModificationException(e));
+            }
+
+            return operationResult;
+        }
+
+        protected virtual IOperationResult HandleModificationException(Exception exception)
+        {
+            var operationResult = new OperationResult();
+
+            if (exception is not null)
+                operationResult.AddException(exception);
+
             return operationResult;
         }
 

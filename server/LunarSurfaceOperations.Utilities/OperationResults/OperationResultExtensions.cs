@@ -21,7 +21,7 @@
                 return;
 
             if (string.IsNullOrWhiteSpace(errorMessage))
-                errorMessage = ValidationMessages.InvalidStringArgument;
+                errorMessage = ValidationMessages.InvalidNullArgument;
 
             operationResult.AddErrorMessage(errorMessage);
         }

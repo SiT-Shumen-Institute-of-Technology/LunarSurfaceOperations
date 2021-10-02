@@ -1,5 +1,6 @@
 ﻿namespace LunarSurfaceOperations.Data.Models
 {
+    using System.Collections.Generic;
     using JetBrains.Annotations;
     using MongoDB.Bson;
     using MongoDB.Bson.Serialization.Attributes;
@@ -15,5 +16,8 @@
         
         [BsonElement("o")]
         public ObjectId OwnerId { get; [UsedImplicitly] set; }
+        
+        [BsonElement("m")]
+        public IEnumerable<ObjectId> Members { get; [UsedImplicitly] set; }
     }
 }

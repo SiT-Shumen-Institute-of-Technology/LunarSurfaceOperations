@@ -1,6 +1,7 @@
 ﻿namespace LunarSurfaceOperations.Core.Services
 {
     using System;
+    using System.Collections.Generic;
     using System.Threading;
     using System.Threading.Tasks;
     using JetBrains.Annotations;
@@ -17,6 +18,7 @@
     using LunarSurfaceOperations.Utilities.OperationResults;
     using LunarSurfaceOperations.Validation.Contracts;
     using MongoDB.Bson;
+    using Quantum.DMS.Utilities;
 
     public class UserService : BaseService<IUserRepository, User, IUserPrototype, IUserLayout>, IUserService
     {
@@ -59,7 +61,7 @@
         {
             var operationResult = new OperationResult<IUserLayout>();
 
-            var getUser = await this.Repository.GetAsync(userId, cancellationToken);
+            var getUser = await this.GetEntityByIdAsync(userId, cancellationToken);
             if (getUser.Success is false)
                 return operationResult.AppendErrorMessages(getUser);
 
@@ -72,6 +74,38 @@
                 operationResult.AppendErrorMessages(constructLayout);
 
             operationResult.Data = constructLayout.Data;
+            return operationResult;
+        }
+
+        public async Task<OperationResult<IEnumerable<IUserLayout>>> GetManyByUsernameAsync(IEnumerable<string> usernames, CancellationToken cancellationToken)
+        {
+            var operationResult = new OperationResult<IEnumerable<IUserLayout>>();
+
+            var getUsers = await this.Repository.GetManyByUsernameAsync(usernames, cancellationToken);
+            if (getUsers.Success is false)
+                return operationResult.AppendErrorMessages(getUsers);
+
+            var constructManyLayouts = this.ConstructManyLayouts(getUsers.Data);
+            if (constructManyLayouts.Success is false)
+                return operationResult.AppendErrorMessages(constructManyLayouts);
+
+            operationResult.Data = constructManyLayouts.Data;
+            return operationResult;
+        }
+
+        public async Task<OperationResult<IEnumerable<IUserLayout>>> GetManyAsync(IEnumerable<ObjectId> identifiers, CancellationToken cancellationToken)
+        {
+            var operationResult = new OperationResult<IEnumerable<IUserLayout>>();
+
+            var getUsers = await this.Repository.GetManyAsync(identifiers, cancellationToken);
+            if (getUsers.Success is false)
+                return operationResult.AppendErrorMessages(getUsers);
+
+            var constructManyLayouts = this.ConstructManyLayouts(getUsers.Data);
+            if (constructManyLayouts.Success is false)
+                return operationResult.AppendErrorMessages(constructManyLayouts);
+
+            operationResult.Data = constructManyLayouts.Data;
             return operationResult;
         }
 
@@ -106,5 +140,7 @@
             operationResult.Data = new UserLayout(entity.Id, entity.Username, entity.Email);
             return operationResult;
         }
+
+        protected override Task<IOperationResult<User>> GetEntityByIdAsync(ObjectId entityId, CancellationToken cancellationToken) => this.Repository.GetAsync(entityId, cancellationToken);
     }
 }
