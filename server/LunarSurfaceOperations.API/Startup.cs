@@ -8,6 +8,7 @@ namespace LunarSurfaceOperations.API
     using LunarSurfaceOperations.API.Converters;
     using LunarSurfaceOperations.API.Factories;
     using LunarSurfaceOperations.API.Factories.Contracts;
+    using LunarSurfaceOperations.API.Hubs;
     using LunarSurfaceOperations.API.Middlewares;
     using LunarSurfaceOperations.API.Settings;
     using LunarSurfaceOperations.API.StartupTasks;
@@ -75,6 +76,8 @@ namespace LunarSurfaceOperations.API
                     {
                         options.JsonSerializerOptions.Converters.Add(new ObjectIdJsonConverter());
                     });
+            services.AddSignalR();
+            
             this.ConfigureAuthentication(services);
             this.ConfigureCors(services);
         }
@@ -158,6 +161,7 @@ namespace LunarSurfaceOperations.API
                 endpoints =>
                 {
                     endpoints.MapControllers();
+                    endpoints.MapHub<MessagesHub>("_hubs/messages");
                 });
         }
     }
