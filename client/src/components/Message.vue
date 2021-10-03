@@ -56,7 +56,7 @@ export default defineComponent({
     }
 
     .message.isApproved {
-        background-color: green;
+        background-color: rgba(77, 175, 124, 0.5) ;
     }
 
     .message.sent-by-me {

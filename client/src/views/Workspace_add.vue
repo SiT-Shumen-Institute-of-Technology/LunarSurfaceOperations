@@ -17,6 +17,7 @@ import { createWorkspace } from '@/services/workspaces';
 import { IVoidResult } from '@/types/IResult';
 import { defineComponent, Ref, ref } from 'vue'
 import { useStore } from 'vuex';
+import { useRouter } from 'vue-router';
 
 import CustomInput from '../components/CustomInput.vue';
 import ErrorFields from '../components/ErrorFields.vue';
@@ -27,6 +28,7 @@ export default defineComponent({
         ErrorFields
     },
     setup() {
+        const router = useRouter()
         const store = useStore();
         const errors: Ref<string[]> = ref([]);
         const name: Ref<string> = ref('');
@@ -45,6 +47,7 @@ export default defineComponent({
 
             if (result.success) {
                 store.dispatch('fetchWorkspaces');
+                router.push('/');
             } else {
                 errors.value = [...new Set(result.errors)];
             }
