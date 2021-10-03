@@ -81,7 +81,7 @@
                 return this.BadRequest(approveMessage);
 
             var messageViewModel = this._messageFactory.ToViewModel(approveMessage.Data);
-            await this._messagesHubContext.Clients.Group(workspaceId.ToString()).ReceiveMessage(messageViewModel);
+            await this._messagesHubContext.Clients.Group(workspaceId.ToString()).UpdateMessage(messageViewModel);
 
             return this.Ok();
         }
