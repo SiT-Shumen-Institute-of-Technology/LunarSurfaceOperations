@@ -33,7 +33,7 @@
                 Id = messageLayout.Id,
                 Text = messageLayout.Text,
                 Author = this._userFactory.ToViewModel(messageLayout.Author),
-                Timestamp = messageLayout.Timestamp.GetUnixTimeSeconds()
+                Timestamp = messageLayout.Timestamp.GetUnixTimeMilliseconds()
             };
 
             foreach (var attributeLayout in messageLayout.Attributes.OrEmptyIfNull().IgnoreNullValues())
