@@ -21,6 +21,14 @@ export default createStore({
 
     addMessage(state, message: any) {
         state.currentConnectionMessages.push(message);
+    },
+
+    updateMessage(state, message: any) {
+        const index = state.currentConnectionMessages.findIndex(el => {
+            return el.id === message.id
+        });
+
+        state.currentConnectionMessages[index] = message;
     }
   },
   actions: {

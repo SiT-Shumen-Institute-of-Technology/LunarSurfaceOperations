@@ -5,7 +5,7 @@ import Vue from 'vue';
 
 const connection: signalr.HubConnection | null = null;
 
-export async function useSignalR(workspaceId: string, newMessageCallback: any): Promise<void> {
+export async function useSignalR(workspaceId: string, newMessageCallback: any, updateMessageCallback: any): Promise<void> {
 
     const connection = new signalr.HubConnectionBuilder()
         .withUrl(`${process.env.VUE_APP_API_ENDPOINT}/_hubs/messages` , {
@@ -20,6 +20,10 @@ export async function useSignalR(workspaceId: string, newMessageCallback: any): 
     connection.on('ReceiveMessage', (message: any) => {
         newMessageCallback(message);
         console.log('rec', message);
+    });
+
+    connection.on('UpdateMessage', (message: any) => {
+        updateMessageCallback(message);
     });
 
     try {

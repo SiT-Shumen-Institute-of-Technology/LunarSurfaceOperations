@@ -1,5 +1,5 @@
 <template>
-    <div :id="id" class="message">
+    <div :id="id" class="message" :class="{ 'isApproved': status }">
         [{{ time }}]
         {{ author.username }}:
         {{ text }}
@@ -9,23 +9,35 @@
                 {{ attribute.attributeName }}: {{ attribute.value }}
             </span>
         </div>
+        <button v-if="username === author.username && !status" @click="approve">Approve</button>
     </div>
 </template>
 
 <script lang="ts">
 import { defineComponent } from 'vue'
 
+import { approveMessage } from '@/services/messages';
+import { useStore } from 'vuex';
+
 export default defineComponent({
     props: {
+        workspaceId: String,
         id: String,
         text: String,
         author: Object,
         attributes: Array,
-        timestamp: Number
+        timestamp: Number,
+        status: Boolean
     },
     setup(props) {
+        const store = useStore();
+        const approve = async () => {
+            const result = await approveMessage(props.workspaceId || '', props.id || '');
+        };
         return {
             time: new Date(props.timestamp || '').toLocaleString(),
+            username: window.localStorage.getItem('username'),
+            approve
         }
     }
 })
@@ -41,6 +53,10 @@ export default defineComponent({
 
     .message:not(:last-of-type) {
         border-bottom: 1px solid black;
+    }
+
+    .message.isApproved {
+        background-color: green;
     }
 
     .message.sent-by-me {

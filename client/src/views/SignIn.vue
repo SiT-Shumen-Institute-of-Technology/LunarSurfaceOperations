@@ -55,7 +55,7 @@ export default defineComponent({
                 window.localStorage.setItem('username', username.value);
                 setSignedIn(username.value);
                 store.dispatch('fetchWorkspaces');
-                router.push('/home');
+                router.push('/');
             } else {
                 errors.value = [...new Set(loginResult.errors)];
             }

@@ -2,10 +2,12 @@
     <div class="chat-wrapper">
         <div class="chat">
             <Message v-for="message in messages" :key="message"
+                :workspaceId="mainId"
                 :id="message.id"
                 :attributes="message.attributes"
                 :timestamp="message.timestamp"
                 :author="message.author"
+                :status="message.status"
                 :text="message.text" />
         </div>
         <ChatInputField :workspaceId="mainId" />
@@ -50,10 +52,14 @@ export default defineComponent({
             store.commit('addMessage', message);
         }
 
+        const updateMessage = (message: any) => {
+            store.commit('updateMessage', message);
+        }
+
         onMounted(async () => {
             console.log('mounted');
             await fetchMessages();
-            useSignalR(mainId.value, newMessage);
+            useSignalR(mainId.value, newMessage, updateMessage);
         });
 
         onBeforeRouteUpdate(async (to, _, next) => {
@@ -61,7 +67,7 @@ export default defineComponent({
             await fetchMessages();
 
             resetSignalR();
-            useSignalR(to.params.id.toString(), newMessage);
+            useSignalR(to.params.id.toString(), newMessage, updateMessage);
 
             next();
         });

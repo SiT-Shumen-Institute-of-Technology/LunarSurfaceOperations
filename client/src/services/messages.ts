@@ -53,3 +53,26 @@ export async function getMessages(workspaceId: string): Promise<IResult<IMessage
 
     return result;
 }
+
+export async function approveMessage(workspaceId: string, messageId: string): Promise<IVoidResult> {
+    const result: IVoidResult = {
+        success: false,
+        errors: []
+    };
+
+    try {
+        await axios.post(`${process.env.VUE_APP_API_ENDPOINT}${MESSAGES_SUFFIX}/approve`, {
+            messageId: messageId
+        }, {
+            params: {
+                workspaceId: workspaceId
+            }
+        });
+
+        result.success = true;
+    } catch({ response }) {
+        result.errors = response.data;
+    }
+
+    return result;
+}
