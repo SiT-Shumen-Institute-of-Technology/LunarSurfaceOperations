@@ -36,6 +36,7 @@ namespace LunarSurfaceOperations.API
     using Microsoft.AspNetCore.Authorization;
     using Microsoft.AspNetCore.Builder;
     using Microsoft.AspNetCore.Hosting;
+    using Microsoft.AspNetCore.SignalR;
     using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.DependencyInjection;
     using Microsoft.IdentityModel.Tokens;
@@ -90,7 +91,11 @@ namespace LunarSurfaceOperations.API
                         options.JsonSerializerOptions.Converters.Add(new MessageAttributeInputModelConverter());
                         options.JsonSerializerOptions.Converters.Add(new MessageAttributeViewModelSerializer());
                     });
-            services.AddSignalR();
+            services.AddSignalR(
+                options =>
+                {
+                    options.AddFilter(new HubAuthenticationFilter());
+                });
             
             this.ConfigureAuthentication(services);
             this.ConfigureCors(services);

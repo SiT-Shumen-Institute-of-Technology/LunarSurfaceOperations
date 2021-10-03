@@ -67,7 +67,7 @@
             var messageViewModel = this._messageFactory.ToViewModel(createMessage.Data);
             await this._messagesHubContext.Clients.Group(workspaceId.ToString()).ReceiveMessage(messageViewModel);
 
-            return this.Ok();
+            return this.Ok(messageViewModel);
         }
 
         [HttpPost("approve")]
