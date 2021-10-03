@@ -80,6 +80,9 @@
             if (approveMessage.Success is false)
                 return this.BadRequest(approveMessage);
 
+            var messageViewModel = this._messageFactory.ToViewModel(approveMessage.Data);
+            await this._messagesHubContext.Clients.Group(workspaceId.ToString()).ReceiveMessage(messageViewModel);
+
             return this.Ok();
         }
     }

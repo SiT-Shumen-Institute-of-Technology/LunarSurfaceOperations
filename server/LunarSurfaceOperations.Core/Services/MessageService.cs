@@ -63,9 +63,9 @@
         public Task<IOperationResult<IMessageLayout>> CreateAsync(ObjectId workspaceId, IMessagePrototype prototype, CancellationToken cancellationToken)
             => this.CreateInternallyAsync(new WorkspaceScopeIdentification<Message>(workspaceId), prototype, cancellationToken);
 
-        public async Task<IOperationResult> ApproveAsync(ObjectId workspaceId, ObjectId messageId, CancellationToken cancellationToken)
+        public async Task<IOperationResult<IMessageLayout>> ApproveAsync(ObjectId workspaceId, ObjectId messageId, CancellationToken cancellationToken)
         {
-            var operationResult = new OperationResult();
+            var operationResult = new OperationResult<IMessageLayout>();
 
             var workspaceIdentification = new WorkspaceScopeIdentification<Message>(workspaceId);
             var getMessage = await this.GetEntityInternallyAsync(messageId, workspaceIdentification, cancellationToken);
@@ -89,6 +89,11 @@
             if (updateStatus.Success is false)
                 operationResult.AppendErrorMessages(updateStatus);
 
+            var constructLayout = await this.ConstructLayout(message, cancellationToken);
+            if (constructLayout.Success is false)
+                return operationResult.AppendErrorMessages(constructLayout);
+
+            operationResult.Data = constructLayout.Data;
             return operationResult;
         }
 

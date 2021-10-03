@@ -6,5 +6,6 @@
     public interface IMessageHubClient
     {
         Task ReceiveMessage(MessageViewModel messageViewModel);
+        Task UpdateMessage(MessageViewModel messageViewModel);
     }
 }
