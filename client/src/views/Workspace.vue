@@ -16,7 +16,7 @@
 
 <script lang="ts">
 import { useStore } from 'vuex';
-import { computed, defineComponent, onMounted, ref } from 'vue'
+import { computed, defineComponent, onBeforeUnmount, onMounted, ref, Ref } from 'vue'
 import { onBeforeRouteUpdate, useRoute } from 'vue-router'
 
 import { getMessages } from '@/services/messages';
@@ -56,26 +56,28 @@ export default defineComponent({
             store.commit('updateMessage', message);
         }
 
+        const updateWorkspaces = (workspace: any) => {
+            store.commit('updateWorkspaces', workspace);
+        }
+
         onMounted(async () => {
-            console.log('mounted');
             await fetchMessages();
-            useSignalR(mainId.value, newMessage, updateMessage);
+            useSignalR(mainId.value, newMessage, updateMessage, updateWorkspaces);
         });
 
         onBeforeRouteUpdate(async (to, _, next) => {
-            console.log(mainId.value);
             resetSignalR(mainId.value);
             mainId.value = to.params.id.toString();
             await fetchMessages();
 
-            useSignalR(to.params.id.toString(), newMessage, updateMessage);
+            useSignalR(to.params.id.toString(), newMessage, updateMessage, updateWorkspaces);
 
             next();
         });
 
         return {
             mainId,
-            messages: computed(() => store.state.currentConnectionMessages)
+            messages: computed(() => store.state.currentConnectionMessages),
         }
     },
 })
