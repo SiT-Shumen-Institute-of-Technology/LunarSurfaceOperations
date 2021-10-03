@@ -47,7 +47,7 @@
             var layouts = new List<IWorkspaceLayout>();
             foreach (var workspace in getWorkspaces.Data.OrEmptyIfNull().IgnoreNullValues())
             {
-                var constructLayout = this.ConstructLayout(workspace);
+                var constructLayout = await this.ConstructLayout(workspace, cancellationToken);
                 if (constructLayout.Success is false)
                     return operationResult.AppendErrorMessages(constructLayout);
 
@@ -133,22 +133,24 @@
         public Task<IOperationResult<IWorkspaceLayout>> UpdateAsync(ObjectId id, IWorkspacePrototype prototype, CancellationToken cancellationToken)
             => this.UpdateInternallyAsync(id, new EmptyScopeIdentification<Workspace>(), prototype, cancellationToken);
 
-        protected override IOperationResult EnhanceDatabaseModel(Workspace databaseModel, IWorkspacePrototype prototype)
+        protected override IOperationResult EnhanceDatabaseModel(Workspace entity, IWorkspacePrototype prototype)
         {
             var operationResult = new OperationResult();
 
-            operationResult.ValidateNotNull(databaseModel);
+            operationResult.ValidateNotNull(entity);
             operationResult.ValidateNotNull(prototype);
             if (operationResult.Success == false)
                 return operationResult;
 
-            databaseModel.Name = prototype.Name;
-            databaseModel.Description = prototype.Description;
-            databaseModel.OwnerId = this._authenticationContext.CurrentUser.Id;
+            entity.Name = prototype.Name;
+            entity.Description = prototype.Description;
+            entity.OwnerId = this._authenticationContext.CurrentUser.Id;
             return operationResult;
         }
 
-        protected override IOperationResult<IWorkspaceLayout> ConstructLayout(Workspace entity)
+        protected override Task<IOperationResult<IWorkspaceLayout>> ConstructLayout(Workspace entity, CancellationToken cancellationToken) => Task.FromResult(this.ConstructLayoutInternally(entity));
+
+        private IOperationResult<IWorkspaceLayout> ConstructLayoutInternally(Workspace entity)
         {
             var operationResult = new OperationResult<IWorkspaceLayout>();
 

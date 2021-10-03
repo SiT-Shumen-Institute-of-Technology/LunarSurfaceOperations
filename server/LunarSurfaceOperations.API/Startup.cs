@@ -8,6 +8,8 @@ namespace LunarSurfaceOperations.API
     using LunarSurfaceOperations.API.Converters;
     using LunarSurfaceOperations.API.Factories;
     using LunarSurfaceOperations.API.Factories.Contracts;
+    using LunarSurfaceOperations.API.Factories.Contracts.MessageAttributes;
+    using LunarSurfaceOperations.API.Factories.MessageAttributes;
     using LunarSurfaceOperations.API.Hubs;
     using LunarSurfaceOperations.API.Middlewares;
     using LunarSurfaceOperations.API.Settings;
@@ -19,10 +21,13 @@ namespace LunarSurfaceOperations.API
     using LunarSurfaceOperations.Connections.Contracts;
     using LunarSurfaceOperations.Core.Authentication;
     using LunarSurfaceOperations.Core.Contracts.Authentication;
+    using LunarSurfaceOperations.Core.Contracts.Processors.MessageAttribute;
     using LunarSurfaceOperations.Core.Contracts.Services;
+    using LunarSurfaceOperations.Core.Processors.MessageAttribute;
     using LunarSurfaceOperations.Core.Services;
     using LunarSurfaceOperations.Data.Connections;
     using LunarSurfaceOperations.Data.Contracts;
+    using LunarSurfaceOperations.Data.Models;
     using LunarSurfaceOperations.Data.Repositories;
     using LunarSurfaceOperations.Validation;
     using LunarSurfaceOperations.Validation.Contracts;
@@ -33,6 +38,7 @@ namespace LunarSurfaceOperations.API
     using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.DependencyInjection;
     using Microsoft.IdentityModel.Tokens;
+    using MongoDB.Bson.Serialization;
     using MongoDB.Driver;
     using Quantum.DMS.Utilities;
 
@@ -50,12 +56,16 @@ namespace LunarSurfaceOperations.API
         // For more information on how to configure your application, visit https://go.microsoft.com/fwlink/?LinkID=398940
         public void ConfigureServices(IServiceCollection services)
         {
+            RegisterModels();
+
             services.AddSingleton<IStartupTask, SetupDatabaseStartupTask>();
             services.AddSingleton<IConnectionManager<IMongoDatabase>, MongoDatabaseConnection>();
             services.AddSingleton<IPasswordHashingService, PasswordHashingService>();
             services.AddScoped<IUserFactory, UserFactory>();
             services.AddScoped<IUserService, UserService>();
             services.AddScoped<IUserRepository, UserRepository>();
+            services.AddScoped<IMessageAttributeLayoutProcessor, MessageStringAttributeLayoutProcessor>();
+            services.AddScoped<IMessageAttributeProcessor, MessageStringAttributeProcessor>();
             services.AddScoped<IMessageFactory, MessageFactory>();
             services.AddScoped<IMessageService, MessageService>();
             services.AddScoped<IMessageRepository, MessageRepository>();
@@ -76,6 +86,8 @@ namespace LunarSurfaceOperations.API
                     options =>
                     {
                         options.JsonSerializerOptions.Converters.Add(new ObjectIdJsonConverter());
+                        options.JsonSerializerOptions.Converters.Add(new MessageAttributeInputModelConverter());
+                        options.JsonSerializerOptions.Converters.Add(new MessageAttributeViewModelSerializer());
                     });
             services.AddSignalR();
             
@@ -146,6 +158,11 @@ namespace LunarSurfaceOperations.API
                             corsPolicyOptions.AllowCredentials();
                         });
                 });
+        }
+
+        private static void RegisterModels()
+        {
+            BsonClassMap.RegisterClassMap<MessageStringAttribute>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

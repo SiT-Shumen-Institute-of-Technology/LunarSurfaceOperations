@@ -53,12 +53,32 @@
                 return this.BadRequest(ValidationMessages.InvalidRequest);
 
             var messagePrototype = new MessagePrototype(inputModel.Text);
+            foreach (var attributeInputModel in inputModel.Attributes.OrEmptyIfNull().IgnoreNullValues())
+            {
+                var attributePrototype = attributeInputModel.ConstructPrototype();
+                if (attributePrototype is not null)
+                    messagePrototype.AddAttribute(attributePrototype);
+            }
+
             var createMessage = await this._messageService.CreateAsync(workspaceId, messagePrototype, cancellationToken);
             if (createMessage.Success is false)
                 return this.BadRequest(createMessage.ToString());
 
             var messageViewModel = this._messageFactory.ToViewModel(createMessage.Data);
             await this._messagesHubContext.Clients.Group(workspaceId.ToString()).ReceiveMessage(messageViewModel);
+
+            return this.Ok();
+        }
+
+        [HttpPost("approve")]
+        public async Task<IActionResult> ApproveAsync([FromQuery] ObjectId workspaceId, [FromBody] ApproveMessageRequest approveMessageRequest, CancellationToken cancellationToken)
+        {
+            if (approveMessageRequest is null)
+                return this.BadRequest(ValidationMessages.InvalidRequest);
+
+            var approveMessage = await this._messageService.ApproveAsync(workspaceId, approveMessageRequest.MessageId, cancellationToken);
+            if (approveMessage.Success is false)
+                return this.BadRequest(approveMessage);
 
             return this.Ok();
         }

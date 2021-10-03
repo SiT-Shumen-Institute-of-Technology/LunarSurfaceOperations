@@ -69,7 +69,7 @@
             if (user is null)
                 return operationResult;
 
-            var constructLayout = this.ConstructLayout(getUser.Data);
+            var constructLayout = await this.ConstructLayout(getUser.Data, cancellationToken);
             if (constructLayout.Success is false)
                 operationResult.AppendErrorMessages(constructLayout);
 
@@ -85,7 +85,7 @@
             if (getUsers.Success is false)
                 return operationResult.AppendErrorMessages(getUsers);
 
-            var constructManyLayouts = this.ConstructManyLayouts(getUsers.Data);
+            var constructManyLayouts = await this.ConstructManyLayouts(getUsers.Data, cancellationToken);
             if (constructManyLayouts.Success is false)
                 return operationResult.AppendErrorMessages(constructManyLayouts);
 
@@ -101,7 +101,7 @@
             if (getUsers.Success is false)
                 return operationResult.AppendErrorMessages(getUsers);
 
-            var constructManyLayouts = this.ConstructManyLayouts(getUsers.Data);
+            var constructManyLayouts = await this.ConstructManyLayouts(getUsers.Data, cancellationToken);
             if (constructManyLayouts.Success is false)
                 return operationResult.AppendErrorMessages(constructManyLayouts);
 
@@ -112,13 +112,13 @@
         public Task<IOperationResult<IUserLayout>> CreateAsync(IUserPrototype prototype, CancellationToken cancellationToken)
             => this.CreateInternallyAsync(new EmptyScopeIdentification<User>(), prototype, cancellationToken);
 
-        public Task<IOperationResult<IUserLayout>> UpdateAsync(ObjectId id, IUserPrototype prototype, CancellationToken cancellationToken) 
+        public Task<IOperationResult<IUserLayout>> UpdateAsync(ObjectId id, IUserPrototype prototype, CancellationToken cancellationToken)
             => this.UpdateInternallyAsync(id, new EmptyScopeIdentification<User>(), prototype, cancellationToken);
 
-        protected override IOperationResult EnhanceDatabaseModel(User databaseModel, IUserPrototype prototype)
+        protected override IOperationResult EnhanceDatabaseModel(User entity, IUserPrototype prototype)
         {
             var operationResult = new OperationResult();
-            operationResult.ValidateNotNull(databaseModel);
+            operationResult.ValidateNotNull(entity);
             operationResult.ValidateNotNull(prototype);
             if (operationResult.Success is false)
                 return operationResult;
@@ -127,15 +127,17 @@
             if (hashPassword.Success == false)
                 return operationResult.AppendErrorMessages(hashPassword);
 
-            databaseModel.Username = prototype.Username;
-            databaseModel.Email = prototype.Email;
-            databaseModel.Password = hashPassword.Data.HashedValue;
-            databaseModel.Salt = hashPassword.Data.Salt;
+            entity.Username = prototype.Username;
+            entity.Email = prototype.Email;
+            entity.Password = hashPassword.Data.HashedValue;
+            entity.Salt = hashPassword.Data.Salt;
 
             return operationResult;
         }
 
-        protected override IOperationResult<IUserLayout> ConstructLayout(User entity)
+        protected override Task<IOperationResult<IUserLayout>> ConstructLayout(User entity, CancellationToken cancellationToken) => Task.FromResult(this.ConstructLayoutInternally(entity));
+
+        private IOperationResult<IUserLayout> ConstructLayoutInternally(User entity)
         {
             var operationResult = new OperationResult<IUserLayout>();
 
@@ -150,7 +152,6 @@
         protected override Task<IOperationResult<User>> GetEntityInternallyAsync(ObjectId entityId, EmptyScopeIdentification<User> identification, CancellationToken cancellationToken)
             => this.GetEntityInternallyAsync(entityId, cancellationToken);
 
-        private Task<IOperationResult<User>> GetEntityInternallyAsync(ObjectId entityId, CancellationToken cancellationToken)
-            => this.Repository.GetAsync(entityId, cancellationToken);
+        private Task<IOperationResult<User>> GetEntityInternallyAsync(ObjectId entityId, CancellationToken cancellationToken) => this.Repository.GetAsync(entityId, cancellationToken);
     }
 }
