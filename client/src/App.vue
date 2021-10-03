@@ -56,6 +56,8 @@ export default defineComponent({
     }
 
     .main-content {
+        max-height: 100%;
+        overflow-y: auto;
         .flex;
         flex: 1 1 auto;
 

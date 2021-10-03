@@ -49,6 +49,7 @@ export default defineComponent({
         background-color: rgba(250, 250, 250, 0.5);
         word-break: break-all;
         font-size: 20px;
+        padding: 5px 10px;
     }
 
     .message:not(:last-of-type) {
@@ -57,6 +58,8 @@ export default defineComponent({
 
     .message.isApproved {
         background-color: rgba(77, 175, 124, 0.5) ;
+
+        color: white;
     }
 
     .message.sent-by-me {
