@@ -43,12 +43,13 @@
             if (string.IsNullOrWhiteSpace(idClaim))
                 return true;
 
-            // retrieve the application user within the tenant.
-            var userService = httpContext.RequestServices.GetRequiredService<IUserService>();
-
             if (ObjectId.TryParse(idClaim, out var id) == false)
-                return true;
+            {
+                await httpContext.Response.ReturnUnauthorizedAsync("Invalid identifier was provided.");
+                return false;
+            }
             
+            var userService = httpContext.RequestServices.GetRequiredService<IUserService>();
             var getUserResult = await userService.GetAsync(id, httpContext.RequestAborted).ConfigureAwait(false);
             if (getUserResult.Success == false)
             {
@@ -63,7 +64,6 @@
                 return false;
             }
 
-            // Set the authentication context and assign it to the service.
             var authenticationContext = httpContext.RequestServices.GetRequiredService<IAuthenticationContext>();
             authenticationContext.Authenticate(authenticatedUser);
 
