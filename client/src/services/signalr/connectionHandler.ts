@@ -1,11 +1,10 @@
 import * as signalr from '@microsoft/signalr';
 
 import { getJWT } from '@/utils/globalUtils';
-import Vue from 'vue';
 
 let connection: signalr.HubConnection | null = null;
 
-export async function useSignalR(workspaceId: string, newMessageCallback: any, updateMessageCallback: any): Promise<void> {
+export async function useSignalR(workspaceId: string, newMessageCallback: any, updateMessageCallback: any, updateWorkspace: any): Promise<void> {
     connection = new signalr.HubConnectionBuilder()
         .withUrl(`${process.env.VUE_APP_API_ENDPOINT}/_hubs/messages` , {
             accessTokenFactory: () => getJWT() || "",
@@ -25,9 +24,12 @@ export async function useSignalR(workspaceId: string, newMessageCallback: any, u
         updateMessageCallback(message);
     });
 
+    connection.on('InviteToWorkspace', (workspace: any) => {
+        updateWorkspace(workspace);
+    })
+
     try {
-        const invoked = await connection.invoke('ConnectToWorkspace', workspaceId);
-        console.log(invoked);
+        await connection.invoke('ConnectToWorkspace', workspaceId);
     } catch(error) {
         console.log(error);
     }
@@ -35,7 +37,6 @@ export async function useSignalR(workspaceId: string, newMessageCallback: any, u
 
 export async function resetSignalR(workspaceId: string): Promise<void> {
     try {
-        console.log(connection);
         await connection?.invoke('DisconnectFromWorkspace', workspaceId);
     } catch (error) {
         console.log(error);

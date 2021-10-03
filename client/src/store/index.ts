@@ -8,7 +8,7 @@ import {useAuthState} from '@/utils/globalUtils';
 export default createStore({
   state: {
       workspaces: Array<IWorkspace>(),
-      currentConnectionMessages: Array<any>()
+      currentConnectionMessages: Array<any>(),
   },
   mutations: {
     setWorkspaces(state, data: IWorkspace[]) {
@@ -29,7 +29,11 @@ export default createStore({
         });
 
         state.currentConnectionMessages[index] = message;
-    }
+    },
+
+    updateWorkspaces(state, workspace: any) {
+        state.workspaces.push(workspace);
+    },
   },
   actions: {
     async fetchWorkspaces({ commit }) {
