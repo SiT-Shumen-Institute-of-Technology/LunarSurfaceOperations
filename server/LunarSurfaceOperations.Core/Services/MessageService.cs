@@ -25,6 +25,7 @@
     public class MessageService : BaseService<IMessageRepository, Message, WorkspaceScopeIdentification<Message>, IMessagePrototype, IMessageLayout>, IMessageService
     {
         private readonly IWorkspaceService _workspaceService;
+        private readonly IUserService _userService;
         private readonly IAuthenticationContext _authenticationContext;
         private readonly IReadOnlyCollection<IMessageAttributeProcessor> _attributeProcessors;
 
@@ -32,11 +33,13 @@
             [NotNull] IMessageRepository repository,
             [NotNull] IExhaustiveValidator<IMessagePrototype> validator,
             [NotNull] IWorkspaceService workspaceService,
+            [NotNull] IUserService userService,
             [NotNull] IAuthenticationContext authenticationContext,
             [CanBeNull] IEnumerable<IMessageAttributeProcessor> attributeProcessors)
             : base(repository, validator)
         {
             this._workspaceService = workspaceService ?? throw new ArgumentNullException(nameof(workspaceService));
+            this._userService = userService ?? throw new ArgumentNullException(nameof(userService));
             this._authenticationContext = authenticationContext ?? throw new ArgumentNullException(nameof(authenticationContext));
             this._attributeProcessors = attributeProcessors.OrEmptyIfNull().IgnoreNullValues().ToList().AsReadOnly();
         }
@@ -114,6 +117,41 @@
             return operationResult;
         }
 
+        protected override async Task<IOperationResult<IEnumerable<IMessageLayout>>> ConstructManyLayouts(IEnumerable<Message> entities, CancellationToken cancellationToken)
+        {
+            var operationResult = new OperationResult<IEnumerable<IMessageLayout>>();
+
+            var layouts = new List<IMessageLayout>();
+            operationResult.Data = layouts;
+            
+            var iteratedEntities = entities.OrEmptyIfNull().IgnoreNullValues().ToList().AsReadOnly();
+            if (iteratedEntities.Any() is false)
+                return operationResult;
+
+            var userIdentifiers = iteratedEntities.Select(m => m.AuthorId);
+            var getUsers = await this._userService.GetManyAsync(userIdentifiers, cancellationToken);
+            if (getUsers.Success is false)
+                return operationResult.AppendErrorMessages(getUsers);
+
+            var organizedUsers = new Dictionary<ObjectId, IUserLayout>();
+            foreach (var userLayout in getUsers.Data.OrEmptyIfNull().IgnoreNullValues())
+                organizedUsers[userLayout.Id] = userLayout;
+
+            foreach (var message in iteratedEntities)
+            {
+                organizedUsers.TryGetValue(message.AuthorId, out var author);
+                var constructMessageLayout = await this.ConstructLayoutInternally(message, author, cancellationToken);
+                if (constructMessageLayout.Success is false)
+                    return operationResult.AppendErrorMessages(constructMessageLayout);
+
+                var constructedLayout = constructMessageLayout.Data;
+                if (constructedLayout is not null)
+                    layouts.Add(constructedLayout);
+            }
+
+            return operationResult;
+        }
+
         protected override async Task<IOperationResult<IMessageLayout>> ConstructLayout(Message entity, CancellationToken cancellationToken)
         {
             var operationResult = new OperationResult<IMessageLayout>();
@@ -122,8 +160,29 @@
             if (operationResult.Success is false)
                 return operationResult;
 
-            var messageLayout = new MessageLayout(entity.Id, entity.WorkspaceId, entity.Text);
-            foreach (var messageAttribute in entity.Attributes.OrEmptyIfNull().IgnoreNullValues())
+            var getAuthor = await this._userService.GetAsync(entity.AuthorId, cancellationToken).ConfigureAwait(false);
+            if (getAuthor.Success is false)
+                return operationResult.AppendErrorMessages(getAuthor);
+
+            var constructLayout = await this.ConstructLayoutInternally(entity, getAuthor.Data, cancellationToken);
+            if (constructLayout.Success is false)
+                return operationResult.AppendErrorMessages(constructLayout);
+
+            operationResult.Data = constructLayout.Data;
+            return operationResult;
+        }
+
+        private async Task<IOperationResult<IMessageLayout>> ConstructLayoutInternally(Message message, IUserLayout author, CancellationToken cancellationToken)
+        {
+            var operationResult = new OperationResult<IMessageLayout>();
+            
+            operationResult.ValidateNotNull(message);
+            operationResult.ValidateNotNull(author);
+            if (operationResult.Success is false)
+                return operationResult;
+            
+            var messageLayout = new MessageLayout(message.Id, message.WorkspaceId, message.Text, author, message.Timestamp);
+            foreach (var messageAttribute in message.Attributes.OrEmptyIfNull().IgnoreNullValues())
             {
                 if (this.TryProcessAttribute(messageAttribute, out var intermediaryProcessor) == false)
                     continue;
@@ -138,7 +197,6 @@
             }
 
             operationResult.Data = messageLayout;
-
             return operationResult;
         }
 

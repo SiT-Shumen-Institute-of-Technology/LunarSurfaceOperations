@@ -1,5 +1,6 @@
 ﻿namespace LunarSurfaceOperations.Core.Contracts.OperativeModels.Layouts
 {
+    using System;
     using System.Collections.Generic;
     using MongoDB.Bson;
 
@@ -8,5 +9,7 @@
         ObjectId WorkspaceId { get; }
         string Text { get; }
         IReadOnlyCollection<IMessageAttributeLayout> Attributes { get; }
+        IUserLayout Author { get; }
+        DateTime Timestamp { get; }
     }
 }
