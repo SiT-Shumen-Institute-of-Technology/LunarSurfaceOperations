@@ -1,7 +1,6 @@
 <template>
     <div class="register">
         <div class="register-wrapper">
-            
             <ErrorFields :errors="errors" />
 
             <CustomInput type="text" label="Name" @update-value="updateName" />
@@ -54,7 +53,8 @@ export default defineComponent({
         return {
             updateDescription,
             updateName,
-            submit
+            submit,
+            errors
         }
     }
 })
