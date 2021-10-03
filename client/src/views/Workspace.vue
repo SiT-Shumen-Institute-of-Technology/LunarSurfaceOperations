@@ -63,10 +63,11 @@ export default defineComponent({
         });
 
         onBeforeRouteUpdate(async (to, _, next) => {
+            console.log(mainId.value);
+            resetSignalR(mainId.value);
             mainId.value = to.params.id.toString();
             await fetchMessages();
 
-            resetSignalR();
             useSignalR(to.params.id.toString(), newMessage, updateMessage);
 
             next();
