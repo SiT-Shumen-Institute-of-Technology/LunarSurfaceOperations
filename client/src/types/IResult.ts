@@ -6,3 +6,7 @@ export interface IVoidResult {
 export interface IResult<T> extends IVoidResult {
     data: T
 }
+
+export function generateErrorMessages(errors: string): string[] {
+    return errors.trimEnd().split('\n');
+}

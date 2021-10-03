@@ -1,6 +1,9 @@
 <template>
     <div class="register">
         <div class="register-wrapper">
+            
+            <ErrorFields :errors="errors" />
+
             <CustomInput type="text" label="Username" @update-value="updateUsername" />
 
             <CustomInput type="password" label="Password" @update-value="updatePassword" />
@@ -11,23 +14,28 @@
 </template>
 
 <script lang="ts">
+import { useStore } from 'vuex';
 import { defineComponent, Ref, ref } from 'vue'
 import { Router, useRouter } from 'vue-router';
 
-import { useAuthState } from '@/utils/globalUtils';
+import { useAuthState, setJWT } from '@/utils/globalUtils';
 import { signin } from '@/services/auth';
 import { IResult } from '@/types/IResult';
 import { IBearer } from '@/types/IBearer';
 
 import CustomInput from '../components/CustomInput.vue';
+import ErrorFields from '../components/ErrorFields.vue';
 
 export default defineComponent({
     components: {
-        CustomInput
+        CustomInput,
+        ErrorFields
     },
     setup() {
+        const store = useStore();
         const username: Ref<string> = ref('');
         const password: Ref<string> = ref('');
+        const errors: Ref<string[]> = ref([]);
         const router: Router = useRouter();
 
         const updateUsername = (userInput: string) => {
@@ -39,21 +47,24 @@ export default defineComponent({
         }
 
         const submit = async () => {
-            console.log(username.value, password.value);
-            const registerResult: IResult<IBearer> = await signin(username.value, password.value);
+            const loginResult: IResult<IBearer> = await signin(username.value, password.value);
 
-            if (registerResult.success && registerResult.data.token) {
+            if (loginResult.success && loginResult.data.token) {
                 const [ _, setSignedIn ] = useAuthState();
-                window.localStorage.setItem('JWT', registerResult.data.token);
+                setJWT(loginResult.data.token);
                 window.localStorage.setItem('username', username.value);
                 setSignedIn(username.value);
+                store.dispatch('fetchWorkspaces');
                 router.push('/home');
+            } else {
+                errors.value = [...new Set(loginResult.errors)];
             }
         }
         return {
             updateUsername,
             updatePassword,
-            submit
+            submit,
+            errors
         }
     }
 })

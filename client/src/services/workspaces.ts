@@ -1,6 +1,6 @@
 import axios, { AxiosResponse } from 'axios';
 
-import { IResult, IVoidResult } from '@/types/IResult';
+import { IResult, IVoidResult, generateErrorMessages } from '@/types/IResult';
 import { IWorkspace } from '@/types/IWorkspace';
 
 const WORKSPACES_SUFFIX = '/_workspaces';
@@ -18,8 +18,8 @@ export async function createWorkspace(name: string, description?: string): Promi
         });
 
         result.success = true;
-    } catch(error) {
-        result.errors.push(error);
+    } catch({ response }) {
+        result.errors = generateErrorMessages(response.data);
     }
 
     return result;
@@ -42,8 +42,8 @@ export async function updateWorkspace(id: string, name: string, description?: st
         });
 
         result.success = true;
-    } catch(error) {
-        result.errors.push(error);
+    } catch({ response }) {
+        result.errors = generateErrorMessages(response.data);
     }
 
     return result;
@@ -66,8 +66,8 @@ export async function getWorkspaces(): Promise<IResult<IWorkspace[]>> {
         
         result.success = true;
         result.data = response.data;
-    } catch(error) {
-        result.errors.push(error);
+    } catch({ response }) {
+        result.errors = generateErrorMessages(response.data);
     }
 
     return result;

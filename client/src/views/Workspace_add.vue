@@ -1,6 +1,9 @@
 <template>
     <div class="register">
         <div class="register-wrapper">
+            
+            <ErrorFields :errors="errors" />
+
             <CustomInput type="text" label="Name" @update-value="updateName" />
 
             <CustomInput type="text" label="Descriptions" @update-value="updateDescription" />
@@ -17,13 +20,16 @@ import { defineComponent, Ref, ref } from 'vue'
 import { useStore } from 'vuex';
 
 import CustomInput from '../components/CustomInput.vue';
+import ErrorFields from '../components/ErrorFields.vue';
 
 export default defineComponent({
     components: {
-        CustomInput
+        CustomInput,
+        ErrorFields
     },
     setup() {
         const store = useStore();
+        const errors: Ref<string[]> = ref([]);
         const name: Ref<string> = ref('');
         const description: Ref<string> = ref('');
 
@@ -40,6 +46,8 @@ export default defineComponent({
 
             if (result.success) {
                 store.dispatch('fetchWorkspaces');
+            } else {
+                errors.value = [...new Set(result.errors)];
             }
         }
 

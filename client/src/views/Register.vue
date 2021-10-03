@@ -1,6 +1,8 @@
 <template>
     <div class="register">
         <div class="register-wrapper">
+            <ErrorFields :errors="errors" />
+
             <CustomInput type="text" label="Username" @update-value="updateUsername" />
 
             <CustomInput type="email" label="Email" @update-value="updateEmail"/>
@@ -19,15 +21,18 @@ import { defineComponent, Ref, ref } from 'vue'
 import { Router, useRouter } from 'vue-router';
 
 import CustomInput from '../components/CustomInput.vue';
+import ErrorFields from '../components/ErrorFields.vue';
 
 export default defineComponent({
     components: {
-        CustomInput
+        CustomInput,
+        ErrorFields
     },
     setup() {
         const username: Ref<string> = ref('');
         const email: Ref<string> = ref('');
         const password: Ref<string> = ref('');
+        const errors: Ref<string[]> = ref([]);
         const router: Router = useRouter();
 
         const updateUsername = (userInput: string) => {
@@ -43,18 +48,20 @@ export default defineComponent({
         }
 
         const submit = async () => {
-            console.log(username.value, email.value, password.value);
             const registerResult: IVoidResult = await register(username.value, email.value, password.value);
 
             if (registerResult.success) {
                 router.push('/signin');
+            } else {
+                errors.value = [...new Set(registerResult.errors)];
             }
         }
         return {
             updateUsername,
             updatePassword,
             updateEmail,
-            submit
+            submit,
+            errors
         }
     }
 })
