@@ -181,7 +181,7 @@
             if (operationResult.Success is false)
                 return operationResult;
             
-            var messageLayout = new MessageLayout(message.Id, message.WorkspaceId, message.Text, author, message.Timestamp);
+            var messageLayout = new MessageLayout(message.Id, message.WorkspaceId, message.Text, author, message.Timestamp, message.Status);
             foreach (var messageAttribute in message.Attributes.OrEmptyIfNull().IgnoreNullValues())
             {
                 if (this.TryProcessAttribute(messageAttribute, out var intermediaryProcessor) == false)

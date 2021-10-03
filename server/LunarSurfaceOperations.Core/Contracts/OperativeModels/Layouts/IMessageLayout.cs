@@ -2,6 +2,7 @@
 {
     using System;
     using System.Collections.Generic;
+    using LunarSurfaceOperations.Data.Enums;
     using MongoDB.Bson;
 
     public interface IMessageLayout : ILayout
@@ -11,5 +12,6 @@
         IReadOnlyCollection<IMessageAttributeLayout> Attributes { get; }
         IUserLayout Author { get; }
         DateTime Timestamp { get; }
+        MessageStatus Status { get; }
     }
 }
