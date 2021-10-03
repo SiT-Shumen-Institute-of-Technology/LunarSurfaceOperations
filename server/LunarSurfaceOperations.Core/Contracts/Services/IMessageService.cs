@@ -12,5 +12,6 @@
     {
         Task<IOperationResult<IEnumerable<IMessageLayout>>> GetManyAsync(ObjectId workspaceId, CancellationToken cancellationToken);
         Task<IOperationResult<IMessageLayout>> CreateAsync(ObjectId workspaceId, IMessagePrototype prototype, CancellationToken cancellationToken);
+        Task<IOperationResult> ApproveAsync(ObjectId workspaceId, ObjectId messageId, CancellationToken cancellationToken);
     }
 }

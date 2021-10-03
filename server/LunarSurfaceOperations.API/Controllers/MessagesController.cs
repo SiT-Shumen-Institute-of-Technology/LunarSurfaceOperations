@@ -69,5 +69,18 @@
 
             return this.Ok();
         }
+
+        [HttpPost("approve")]
+        public async Task<IActionResult> ApproveAsync([FromQuery] ObjectId workspaceId, [FromBody] ApproveMessageRequest approveMessageRequest, CancellationToken cancellationToken)
+        {
+            if (approveMessageRequest is null)
+                return this.BadRequest(ValidationMessages.InvalidRequest);
+
+            var approveMessage = await this._messageService.ApproveAsync(workspaceId, approveMessageRequest.MessageId, cancellationToken);
+            if (approveMessage.Success is false)
+                return this.BadRequest(approveMessage);
+
+            return this.Ok();
+        }
     }
 }

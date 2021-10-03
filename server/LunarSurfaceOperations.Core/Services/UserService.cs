@@ -115,10 +115,10 @@
         public Task<IOperationResult<IUserLayout>> UpdateAsync(ObjectId id, IUserPrototype prototype, CancellationToken cancellationToken)
             => this.UpdateInternallyAsync(id, new EmptyScopeIdentification<User>(), prototype, cancellationToken);
 
-        protected override IOperationResult EnhanceDatabaseModel(User databaseModel, IUserPrototype prototype)
+        protected override IOperationResult EnhanceDatabaseModel(User entity, IUserPrototype prototype)
         {
             var operationResult = new OperationResult();
-            operationResult.ValidateNotNull(databaseModel);
+            operationResult.ValidateNotNull(entity);
             operationResult.ValidateNotNull(prototype);
             if (operationResult.Success is false)
                 return operationResult;
@@ -127,10 +127,10 @@
             if (hashPassword.Success == false)
                 return operationResult.AppendErrorMessages(hashPassword);
 
-            databaseModel.Username = prototype.Username;
-            databaseModel.Email = prototype.Email;
-            databaseModel.Password = hashPassword.Data.HashedValue;
-            databaseModel.Salt = hashPassword.Data.Salt;
+            entity.Username = prototype.Username;
+            entity.Email = prototype.Email;
+            entity.Password = hashPassword.Data.HashedValue;
+            entity.Salt = hashPassword.Data.Salt;
 
             return operationResult;
         }

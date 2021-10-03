@@ -46,7 +46,7 @@
             if (validationResult.Success is false)
                 return operationResult.AppendErrorMessages(validationResult);
 
-            var databaseModel = new TEntity {Id = ObjectId.GenerateNewId()};
+            var databaseModel = new TEntity { Id = ObjectId.GenerateNewId() };
             identification.Apply(databaseModel);
 
             var enhanceDatabaseModel = this.EnhanceDatabaseModel(databaseModel, prototype);
@@ -84,10 +84,12 @@
 
             var originalEntity = getEntity.Data;
             if (originalEntity is null)
-            {
                 operationResult.AddErrorMessage(WorkflowMessages.UpdateHasNoMatches);
+            else if (this.CanBeEdited(originalEntity) is false)
+                operationResult.AddErrorMessage(WorkflowMessages.EntityCannotBeUpdated);
+
+            if (operationResult.Success is false)
                 return operationResult;
-            }
 
             var enhanceDatabaseModel = this.EnhanceDatabaseModel(originalEntity, prototype);
             if (enhanceDatabaseModel.Success is false)
@@ -125,7 +127,9 @@
             return operationResult;
         }
 
-        protected abstract IOperationResult EnhanceDatabaseModel(TEntity databaseModel, TPrototype prototype);
+        protected virtual bool CanBeEdited(TEntity entity) => true;
+
+        protected abstract IOperationResult EnhanceDatabaseModel(TEntity entity, TPrototype prototype);
 
         protected abstract Task<IOperationResult<TLayout>> ConstructLayout(TEntity entity, CancellationToken cancellationToken);
 

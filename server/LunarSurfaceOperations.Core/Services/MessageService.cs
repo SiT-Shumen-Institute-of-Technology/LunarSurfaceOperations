@@ -14,7 +14,9 @@
     using LunarSurfaceOperations.Core.OperativeModels.Layouts;
     using LunarSurfaceOperations.Core.Services.ScopeIdentification;
     using LunarSurfaceOperations.Data.Contracts;
+    using LunarSurfaceOperations.Data.Enums;
     using LunarSurfaceOperations.Data.Models;
+    using LunarSurfaceOperations.Resources;
     using LunarSurfaceOperations.Utilities.OperationResults;
     using LunarSurfaceOperations.Validation.Contracts;
     using MongoDB.Bson;
@@ -58,25 +60,55 @@
         public Task<IOperationResult<IMessageLayout>> CreateAsync(ObjectId workspaceId, IMessagePrototype prototype, CancellationToken cancellationToken)
             => this.CreateInternallyAsync(new WorkspaceScopeIdentification<Message>(workspaceId), prototype, cancellationToken);
 
-        protected override IOperationResult EnhanceDatabaseModel(Message databaseModel, IMessagePrototype prototype)
+        public async Task<IOperationResult> ApproveAsync(ObjectId workspaceId, ObjectId messageId, CancellationToken cancellationToken)
         {
             var operationResult = new OperationResult();
 
-            operationResult.ValidateNotNull(databaseModel);
+            var workspaceIdentification = new WorkspaceScopeIdentification<Message>(workspaceId);
+            var getMessage = await this.GetEntityInternallyAsync(messageId, workspaceIdentification, cancellationToken);
+            if (getMessage.Success is false)
+                return operationResult.AppendErrorMessages(getMessage);
+
+            var message = getMessage.Data;
+            operationResult.ValidateNotNull(message, WorkflowMessages.EntityNotFound);
+            if (operationResult.Success is false)
+                return operationResult;
+
+            var currentUserId = this._authenticationContext.CurrentUser.Id;
+            if (message.AuthorId != currentUserId)
+            {
+                operationResult.AddErrorMessage(WorkflowMessages.UserIsNotAuthorOfMessage);
+                return operationResult;
+            }
+
+            message.Status = MessageStatus.OfficiallyApproved;
+            var updateStatus = await this.Repository.UpdateAsync(message, cancellationToken);
+            if (updateStatus.Success is false)
+                operationResult.AppendErrorMessages(updateStatus);
+
+            return operationResult;
+        }
+
+        protected override IOperationResult EnhanceDatabaseModel(Message entity, IMessagePrototype prototype)
+        {
+            var operationResult = new OperationResult();
+
+            operationResult.ValidateNotNull(entity);
             operationResult.ValidateNotNull(prototype);
 
             if (operationResult.Success is false)
                 return operationResult;
 
-            databaseModel.Text = prototype.Text;
-            databaseModel.AuthorId = this._authenticationContext.CurrentUser.Id;
-            databaseModel.Timestamp = DateTime.Now;
+            entity.Text = prototype.Text;
+            entity.AuthorId = this._authenticationContext.CurrentUser.Id;
+            entity.Timestamp = DateTime.Now;
+            entity.Status = MessageStatus.Unofficial;
 
             foreach (var attributePrototype in prototype.Attributes.OrEmptyIfNull().IgnoreNullValues())
             {
                 var materializedAttribute = attributePrototype.Materialize();
                 if (materializedAttribute is not null)
-                    databaseModel.Attributes.Add(materializedAttribute);
+                    entity.Attributes.Add(materializedAttribute);
             }
 
             return operationResult;
@@ -147,6 +179,13 @@
 
             operationResult.Data = getEntity.Data;
             return operationResult;
+        }
+
+        protected override bool CanBeEdited(Message entity)
+        {
+            if (entity is null || entity.Status == MessageStatus.OfficiallyApproved)
+                return false;
+            return base.CanBeEdited(entity);
         }
     }
 }
