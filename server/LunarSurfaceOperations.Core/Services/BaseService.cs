@@ -107,7 +107,7 @@
             return operationResult;
         }
 
-        protected async Task<IOperationResult<IEnumerable<TLayout>>> ConstructManyLayouts(IEnumerable<TEntity> entities, CancellationToken cancellationToken)
+        protected virtual async Task<IOperationResult<IEnumerable<TLayout>>> ConstructManyLayouts(IEnumerable<TEntity> entities, CancellationToken cancellationToken)
         {
             var operationResult = new OperationResult<IEnumerable<TLayout>>();
 

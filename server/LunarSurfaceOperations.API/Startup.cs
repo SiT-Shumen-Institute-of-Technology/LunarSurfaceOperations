@@ -95,7 +95,13 @@ namespace LunarSurfaceOperations.API
                 options =>
                 {
                     options.AddFilter(new HubAuthenticationFilter());
-                });
+                })
+                .AddJsonProtocol(
+                    options =>
+                    {
+                        options.PayloadSerializerOptions.Converters.Add(new ObjectIdJsonConverter());
+                        options.PayloadSerializerOptions.Converters.Add(new MessageAttributeViewModelSerializer());
+                    });
             
             this.ConfigureAuthentication(services);
             this.ConfigureCors(services);
