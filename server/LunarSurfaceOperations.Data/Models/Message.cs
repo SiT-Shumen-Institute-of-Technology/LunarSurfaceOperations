@@ -1,6 +1,7 @@
 ﻿namespace LunarSurfaceOperations.Data.Models
 {
     using System;
+    using System.Collections.Generic;
     using LunarSurfaceOperations.Data.Contracts;
     using MongoDB.Bson;
     using MongoDB.Bson.Serialization.Attributes;
@@ -18,5 +19,8 @@
         
         [BsonElement("d")]
         public DateTime Timestamp { get; set; }
+
+        [BsonElement("a")]
+        public List<IMessageAttribute> Attributes { get; set; } = new List<IMessageAttribute>();
     }
 }

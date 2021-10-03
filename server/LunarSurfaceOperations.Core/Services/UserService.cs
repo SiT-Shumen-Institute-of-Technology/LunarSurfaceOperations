@@ -69,7 +69,7 @@
             if (user is null)
                 return operationResult;
 
-            var constructLayout = this.ConstructLayout(getUser.Data);
+            var constructLayout = await this.ConstructLayout(getUser.Data, cancellationToken);
             if (constructLayout.Success is false)
                 operationResult.AppendErrorMessages(constructLayout);
 
@@ -85,7 +85,7 @@
             if (getUsers.Success is false)
                 return operationResult.AppendErrorMessages(getUsers);
 
-            var constructManyLayouts = this.ConstructManyLayouts(getUsers.Data);
+            var constructManyLayouts = await this.ConstructManyLayouts(getUsers.Data, cancellationToken);
             if (constructManyLayouts.Success is false)
                 return operationResult.AppendErrorMessages(constructManyLayouts);
 
@@ -101,7 +101,7 @@
             if (getUsers.Success is false)
                 return operationResult.AppendErrorMessages(getUsers);
 
-            var constructManyLayouts = this.ConstructManyLayouts(getUsers.Data);
+            var constructManyLayouts = await this.ConstructManyLayouts(getUsers.Data, cancellationToken);
             if (constructManyLayouts.Success is false)
                 return operationResult.AppendErrorMessages(constructManyLayouts);
 
@@ -112,7 +112,7 @@
         public Task<IOperationResult<IUserLayout>> CreateAsync(IUserPrototype prototype, CancellationToken cancellationToken)
             => this.CreateInternallyAsync(new EmptyScopeIdentification<User>(), prototype, cancellationToken);
 
-        public Task<IOperationResult<IUserLayout>> UpdateAsync(ObjectId id, IUserPrototype prototype, CancellationToken cancellationToken) 
+        public Task<IOperationResult<IUserLayout>> UpdateAsync(ObjectId id, IUserPrototype prototype, CancellationToken cancellationToken)
             => this.UpdateInternallyAsync(id, new EmptyScopeIdentification<User>(), prototype, cancellationToken);
 
         protected override IOperationResult EnhanceDatabaseModel(User databaseModel, IUserPrototype prototype)
@@ -135,7 +135,9 @@
             return operationResult;
         }
 
-        protected override IOperationResult<IUserLayout> ConstructLayout(User entity)
+        protected override Task<IOperationResult<IUserLayout>> ConstructLayout(User entity, CancellationToken cancellationToken) => Task.FromResult(this.ConstructLayoutInternally(entity));
+
+        private IOperationResult<IUserLayout> ConstructLayoutInternally(User entity)
         {
             var operationResult = new OperationResult<IUserLayout>();
 
@@ -150,7 +152,6 @@
         protected override Task<IOperationResult<User>> GetEntityInternallyAsync(ObjectId entityId, EmptyScopeIdentification<User> identification, CancellationToken cancellationToken)
             => this.GetEntityInternallyAsync(entityId, cancellationToken);
 
-        private Task<IOperationResult<User>> GetEntityInternallyAsync(ObjectId entityId, CancellationToken cancellationToken)
-            => this.Repository.GetAsync(entityId, cancellationToken);
+        private Task<IOperationResult<User>> GetEntityInternallyAsync(ObjectId entityId, CancellationToken cancellationToken) => this.Repository.GetAsync(entityId, cancellationToken);
     }
 }

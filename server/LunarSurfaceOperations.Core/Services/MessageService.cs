@@ -2,12 +2,14 @@
 {
     using System;
     using System.Collections.Generic;
+    using System.Linq;
     using System.Threading;
     using System.Threading.Tasks;
     using JetBrains.Annotations;
     using LunarSurfaceOperations.Core.Contracts.Authentication;
     using LunarSurfaceOperations.Core.Contracts.OperativeModels.Layouts;
     using LunarSurfaceOperations.Core.Contracts.OperativeModels.Prototypes;
+    using LunarSurfaceOperations.Core.Contracts.Processors.MessageAttribute;
     using LunarSurfaceOperations.Core.Contracts.Services;
     using LunarSurfaceOperations.Core.OperativeModels.Layouts;
     using LunarSurfaceOperations.Core.Services.ScopeIdentification;
@@ -16,17 +18,25 @@
     using LunarSurfaceOperations.Utilities.OperationResults;
     using LunarSurfaceOperations.Validation.Contracts;
     using MongoDB.Bson;
+    using Quantum.DMS.Utilities;
 
     public class MessageService : BaseService<IMessageRepository, Message, WorkspaceScopeIdentification<Message>, IMessagePrototype, IMessageLayout>, IMessageService
     {
         private readonly IWorkspaceService _workspaceService;
         private readonly IAuthenticationContext _authenticationContext;
-        
-        public MessageService([NotNull] IMessageRepository repository, [NotNull] IExhaustiveValidator<IMessagePrototype> validator, [NotNull] IWorkspaceService workspaceService, [NotNull] IAuthenticationContext authenticationContext)
+        private readonly IReadOnlyCollection<IMessageAttributeProcessor> _attributeProcessors;
+
+        public MessageService(
+            [NotNull] IMessageRepository repository,
+            [NotNull] IExhaustiveValidator<IMessagePrototype> validator,
+            [NotNull] IWorkspaceService workspaceService,
+            [NotNull] IAuthenticationContext authenticationContext,
+            [CanBeNull] IEnumerable<IMessageAttributeProcessor> attributeProcessors)
             : base(repository, validator)
         {
             this._workspaceService = workspaceService ?? throw new ArgumentNullException(nameof(workspaceService));
             this._authenticationContext = authenticationContext ?? throw new ArgumentNullException(nameof(authenticationContext));
+            this._attributeProcessors = attributeProcessors.OrEmptyIfNull().IgnoreNullValues().ToList().AsReadOnly();
         }
 
         public async Task<IOperationResult<IEnumerable<IMessageLayout>>> GetManyAsync(ObjectId workspaceId, CancellationToken cancellationToken)
@@ -37,7 +47,7 @@
             if (getMessages.Success is false)
                 return operationResult.AppendErrorMessages(getMessages);
 
-            var constructLayouts = this.ConstructManyLayouts(getMessages.Data);
+            var constructLayouts = await this.ConstructManyLayouts(getMessages.Data, cancellationToken);
             if (constructLayouts.Success is false)
                 return operationResult.AppendErrorMessages(constructLayouts);
 
@@ -61,11 +71,18 @@
             databaseModel.Text = prototype.Text;
             databaseModel.AuthorId = this._authenticationContext.CurrentUser.Id;
             databaseModel.Timestamp = DateTime.Now;
-            
+
+            foreach (var attributePrototype in prototype.Attributes.OrEmptyIfNull().IgnoreNullValues())
+            {
+                var materializedAttribute = attributePrototype.Materialize();
+                if (materializedAttribute is not null)
+                    databaseModel.Attributes.Add(materializedAttribute);
+            }
+
             return operationResult;
         }
 
-        protected override IOperationResult<IMessageLayout> ConstructLayout(Message entity)
+        protected override async Task<IOperationResult<IMessageLayout>> ConstructLayout(Message entity, CancellationToken cancellationToken)
         {
             var operationResult = new OperationResult<IMessageLayout>();
 
@@ -73,8 +90,42 @@
             if (operationResult.Success is false)
                 return operationResult;
 
-            operationResult.Data = new MessageLayout(entity.Id, entity.WorkspaceId, entity.Text);
+            var messageLayout = new MessageLayout(entity.Id, entity.WorkspaceId, entity.Text);
+            foreach (var messageAttribute in entity.Attributes.OrEmptyIfNull().IgnoreNullValues())
+            {
+                if (this.TryProcessAttribute(messageAttribute, out var intermediaryProcessor) == false)
+                    continue;
+
+                var constructAttributeLayout = await intermediaryProcessor.ConstructLayoutAsync(cancellationToken);
+                if (constructAttributeLayout.Success is false)
+                    return operationResult.AppendErrorMessages(constructAttributeLayout);
+
+                var attributeLayout = constructAttributeLayout.Data;
+                if (attributeLayout is not null)
+                    messageLayout.AddAttribute(attributeLayout);
+            }
+
+            operationResult.Data = messageLayout;
+
             return operationResult;
+        }
+
+        private bool TryProcessAttribute(IMessageAttribute attribute, out IMessageAttributeIntermediaryProcessor intermediaryProcessor)
+        {
+            intermediaryProcessor = null;
+            if (attribute is null)
+                return false;
+
+            foreach (var attributeProcessor in this._attributeProcessors)
+            {
+                if (attributeProcessor.CanProcess(attribute) is false)
+                    continue;
+
+                intermediaryProcessor = attributeProcessor.Process(attribute);
+                return intermediaryProcessor is not null;
+            }
+
+            return false;
         }
 
         protected override async Task<IOperationResult<Message>> GetEntityInternallyAsync(ObjectId entityId, WorkspaceScopeIdentification<Message> identification, CancellationToken cancellationToken)

@@ -53,6 +53,13 @@
                 return this.BadRequest(ValidationMessages.InvalidRequest);
 
             var messagePrototype = new MessagePrototype(inputModel.Text);
+            foreach (var attributeInputModel in inputModel.Attributes.OrEmptyIfNull().IgnoreNullValues())
+            {
+                var attributePrototype = attributeInputModel.ConstructPrototype();
+                if (attributePrototype is not null)
+                    messagePrototype.AddAttribute(attributePrototype);
+            }
+
             var createMessage = await this._messageService.CreateAsync(workspaceId, messagePrototype, cancellationToken);
             if (createMessage.Success is false)
                 return this.BadRequest(createMessage.ToString());

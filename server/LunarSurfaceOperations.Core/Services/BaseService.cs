@@ -57,7 +57,7 @@
             if (createResult.Success is false)
                 return operationResult.AppendErrorMessages(createResult);
 
-            var constructLayout = this.ConstructLayout(databaseModel);
+            var constructLayout = await this.ConstructLayout(databaseModel, cancellationToken);
             if (constructLayout.Success is false)
                 return operationResult.AppendErrorMessages(constructLayout);
 
@@ -97,7 +97,7 @@
             if (updateResult.Success is false)
                 operationResult.AppendErrorMessages(updateResult);
 
-            var constructLayout = this.ConstructLayout(originalEntity);
+            var constructLayout = await this.ConstructLayout(originalEntity, cancellationToken);
             if (constructLayout.Success is false)
                 return operationResult.AppendErrorMessages(constructLayout);
 
@@ -105,14 +105,14 @@
             return operationResult;
         }
 
-        protected IOperationResult<IEnumerable<TLayout>> ConstructManyLayouts(IEnumerable<TEntity> entities)
+        protected async Task<IOperationResult<IEnumerable<TLayout>>> ConstructManyLayouts(IEnumerable<TEntity> entities, CancellationToken cancellationToken)
         {
             var operationResult = new OperationResult<IEnumerable<TLayout>>();
 
             var layouts = new List<TLayout>();
             foreach (var entity in entities.OrEmptyIfNull().IgnoreNullValues())
             {
-                var constructLayout = this.ConstructLayout(entity);
+                var constructLayout = await this.ConstructLayout(entity, cancellationToken);
                 if (constructLayout.Success is false)
                     return operationResult.AppendErrorMessages(constructLayout);
 
@@ -127,7 +127,7 @@
 
         protected abstract IOperationResult EnhanceDatabaseModel(TEntity databaseModel, TPrototype prototype);
 
-        protected abstract IOperationResult<TLayout> ConstructLayout(TEntity entity);
+        protected abstract Task<IOperationResult<TLayout>> ConstructLayout(TEntity entity, CancellationToken cancellationToken);
 
         protected abstract Task<IOperationResult<TEntity>> GetEntityInternallyAsync(ObjectId entityId, TScopeIdentification identification, CancellationToken cancellationToken);
     }
