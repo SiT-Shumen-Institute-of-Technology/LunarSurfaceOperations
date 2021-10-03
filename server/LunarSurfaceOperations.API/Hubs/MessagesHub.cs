@@ -6,9 +6,8 @@
     using JetBrains.Annotations;
     using LunarSurfaceOperations.Core.Contracts.Services;
     using Microsoft.AspNetCore.SignalR;
-    using MongoDB.Bson;
 
-    public class MessagesHub : Hub<IMessageHubClient>
+    public class MessagesHub : BaseHub<IMessageHubClient>
     {
         [NotNull]
         private readonly IWorkspaceService _workspaceService;
@@ -18,15 +17,20 @@
             this._workspaceService = workspaceService ?? throw new ArgumentNullException(nameof(workspaceService));
         }
 
-        public async Task ConnectToWorkspace(ObjectId workspaceId, CancellationToken cancellationToken)
+        public async Task ConnectToWorkspace(string workspaceId)
         {
-            var validateAccessibleWorkspace = await this._workspaceService.ValidateIsAccessibleAsync(workspaceId, cancellationToken);
+            var workspaceEntityId = ConvertToId(workspaceId);
+            
+            var validateAccessibleWorkspace = await this._workspaceService.ValidateIsAccessibleAsync(workspaceEntityId, this.GetCancellationToken());
             if (validateAccessibleWorkspace.Success is false)
                 throw new HubException(validateAccessibleWorkspace.ToString());
 
-            await this.Groups.AddToGroupAsync(this.Context.ConnectionId, workspaceId.ToString(), cancellationToken);
+            await this.Groups.AddToGroupAsync(this.Context.ConnectionId, workspaceId, this.GetCancellationToken());
         }
 
-        public async Task DisconnectFromWorkspace(ObjectId workspaceId, CancellationToken cancellationToken) => await this.Groups.RemoveFromGroupAsync(this.Context.ConnectionId, workspaceId.ToString(), cancellationToken);
+        public async Task DisconnectFromWorkspace(string workspaceId) 
+            => await this.Groups.RemoveFromGroupAsync(this.Context.ConnectionId, workspaceId, this.GetCancellationToken());
+
+        private CancellationToken GetCancellationToken() => this.Context.ConnectionAborted;
     }
 }
