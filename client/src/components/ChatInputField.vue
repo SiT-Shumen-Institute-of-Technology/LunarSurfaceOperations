@@ -9,18 +9,19 @@
     </div>
     
     <div class="add-username">
-        <button @click="toggleUsernameAttribute"> 
-            Subject Attribute
+        <button @click="toggleAttribute"> 
+            Attribute
         </button>
 
-        <input v-if="showUsernameAttr" type="text" v-model="usernameAttr" />
+        <input v-if="showAttributeInput" placeholder="Attribute name" type="text" v-model="subjectName" />
+        <input v-if="showAttributeInput" placeholder="Attribute value" type="text" v-model="subjectValue" />
     </div>
 </template>
 
 <script lang="ts">
 import { defineComponent, ref, Ref } from 'vue'
 
-import { IAttribute, IMessage } from '@/types/IMessage';
+import { IMessage } from '@/types/IMessage';
 import { sendMessage } from '@/services/messages';
 
 export default defineComponent({
@@ -29,41 +30,48 @@ export default defineComponent({
     },
     setup(props) {
         const inputValue: Ref<string> = ref('');
-        const showUsernameAttr: Ref<boolean> = ref(false);
-        const usernameAttr: Ref<string> = ref('');
+        const showAttributeInput: Ref<boolean> = ref(false);
+        const subjectName: Ref<string> = ref('');
+        const subjectValue: Ref<string> = ref('');
 
         const send = async () => {
             if (inputValue.value !== '') {
-                const attrs: IAttribute[] = [
-                    { type: 'string', value: usernameAttr.value, attributeName: 'subject' }
-                ];
+                let attrs: any[] = [];
+                if (showAttributeInput.value) {
+                    attrs = [
+                        { type: 'string', value: subjectValue.value, attributeName: subjectName.value }
+                    ];
+                }
 
                 const message: IMessage = {
                     text: inputValue.value,
                     attributes: attrs 
                 };
 
+
                 const result = await sendMessage(message, props.workspaceId || '');
 
                 console.log(result);
                 if (result.success) {
                     inputValue.value = '';
-                    // TODO(n): add it to the chat
+                    subjectName.value = '';
+                    subjectValue.value = '';
                 }
             }
         }
 
-        const toggleUsernameAttribute = () => {
-            showUsernameAttr.value = !showUsernameAttr.value;
+        const toggleAttribute = () => {
+            showAttributeInput.value = !showAttributeInput.value;
         }
 
         return {
             inputValue,
             sendMessage,
             send,
-            toggleUsernameAttribute,
-            showUsernameAttr,
-            usernameAttr
+            toggleAttribute,
+            showAttributeInput,
+            subjectName,
+            subjectValue
         }
     }
 })

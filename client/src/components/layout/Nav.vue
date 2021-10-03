@@ -4,7 +4,7 @@
             <router-link v-if="isSignedIn" class="link" to="/workspace_create">+ Add workspace</router-link>
         </div>
         <div class="nav-right">
-            <span v-if="isSignedIn"> {{ username }} </span>
+            <span class="username" v-if="isSignedIn"> {{ username }} </span>
             <router-link v-if="!isSignedIn" class="link" to="/signin">Sign In</router-link>
             <router-link v-if="!isSignedIn" class="link" to="/register">Register</router-link>
             <router-link v-if="isSignedIn" class="link" to="/" @click="signOut">Sign out</router-link>
@@ -42,7 +42,10 @@ export default defineComponent({
 
         border-bottom: 1px solid black;
         justify-content: space-between;
-
+    
+        .username {
+            color: white
+        }
     }
 </style>
 

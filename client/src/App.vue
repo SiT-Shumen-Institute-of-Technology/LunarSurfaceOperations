@@ -80,9 +80,11 @@ export default defineComponent({
         color: black;
         display: inline-block;
         pointer-events: all;
+        color: white;
 
         &:hover {
             background-color: lightblue;
+            color: black;
         }
     }
 </style>
