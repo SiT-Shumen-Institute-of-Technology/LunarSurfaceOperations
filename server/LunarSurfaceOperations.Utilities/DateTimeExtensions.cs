@@ -4,6 +4,6 @@
 
     public static class DateTimeExtensions
     {
-        public static long GetUnixTimeSeconds(this DateTime date) => (long)date.Subtract(DateTime.UnixEpoch).TotalSeconds;
+        public static long GetUnixTimeMilliseconds(this DateTime date) => (long)date.Subtract(DateTime.UnixEpoch).TotalMilliseconds;
     }
 }
