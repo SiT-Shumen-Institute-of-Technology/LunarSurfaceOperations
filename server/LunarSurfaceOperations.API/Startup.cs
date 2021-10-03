@@ -5,6 +5,7 @@ namespace LunarSurfaceOperations.API
     using System.Linq;
     using System.Text;
     using System.Threading.Tasks;
+    using FluentValidation;
     using JetBrains.Annotations;
     using LunarSurfaceOperations.API.Converters;
     using LunarSurfaceOperations.API.Factories;
@@ -22,10 +23,13 @@ namespace LunarSurfaceOperations.API
     using LunarSurfaceOperations.Connections.Contracts;
     using LunarSurfaceOperations.Core.Authentication;
     using LunarSurfaceOperations.Core.Contracts.Authentication;
+    using LunarSurfaceOperations.Core.Contracts.OperativeModels.Prototypes;
     using LunarSurfaceOperations.Core.Contracts.Processors.MessageAttribute;
     using LunarSurfaceOperations.Core.Contracts.Services;
+    using LunarSurfaceOperations.Core.OperativeModels.Prototypes;
     using LunarSurfaceOperations.Core.Processors.MessageAttribute;
     using LunarSurfaceOperations.Core.Services;
+    using LunarSurfaceOperations.Core.Validators;
     using LunarSurfaceOperations.Data.Connections;
     using LunarSurfaceOperations.Data.Contracts;
     using LunarSurfaceOperations.Data.Models;
@@ -75,7 +79,11 @@ namespace LunarSurfaceOperations.API
             services.AddScoped<IWorkspaceRepository, WorkspaceRepository>();
             services.AddScoped<IWorkspaceFactory, WorkspaceFactory>();
             services.AddScoped<IAuthenticationContext, AuthenticationContext>();
-            services.AddScoped(typeof(IExhaustiveValidator<>), typeof(ExhaustiveFluentValidator<>));
+            services.AddScoped(typeof(IExhaustiveValidator<>), typeof(ExhaustiveValidator<>));
+            services.AddSingleton<IValidator<IUserPrototype>, UserValidator>();
+            services.AddSingleton<IValidator<IWorkspacePrototype>, WorkspaceValidator>();
+            services.AddScoped<IValidator<IMessagePrototype>, MessageValidator>();
+            services.AddSingleton<IValidator<MessageStringAttributePrototype>, MessageStringAttributeValidator>();
 
             services.Configure<DatabaseSettings>(this._configuration.GetSection(DatabaseSettings.Section));
 
