@@ -58,7 +58,6 @@ export default defineComponent({
     .main-content {
         .flex;
         flex: 1 1 auto;
-        overflow-y: scroll;
 
         .main-workspaces {
             flex: 20%;
