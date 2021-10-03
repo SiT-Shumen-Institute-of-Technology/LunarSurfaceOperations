@@ -60,9 +60,9 @@
             return operationResult;
         }
 
-        public async Task<IOperationResult> UpdateMembersAsync(ObjectId workspaceId, IEnumerable<string> members, CancellationToken cancellationToken)
+        public async Task<IOperationResult<IUpdateWorkspaceMembersLayout>> UpdateMembersAsync(ObjectId workspaceId, IEnumerable<string> members, CancellationToken cancellationToken)
         {
-            var operationResult = new OperationResult();
+            var operationResult = new OperationResult<IUpdateWorkspaceMembersLayout>();
 
             var getWorkspace = await this.GetEntityInternallyAsync(workspaceId, cancellationToken);
             if (getWorkspace.Success is false)
@@ -84,11 +84,32 @@
             if (getInvitedUsers.Success is false)
                 return operationResult.AppendErrorMessages(getInvitedUsers);
 
-            var invitedUsersIdentifiers = getInvitedUsers.Data.OrEmptyIfNull().IgnoreNullValues().Select(u => u.Id);
-            var updateWorkspace = await this.Repository.UpdateMembers(workspaceId, invitedUsersIdentifiers, cancellationToken);
-            if (updateWorkspace.Success is false)
-                operationResult.AppendErrorMessages(updateWorkspace);
+            var oldMembers = workspace.Members.ToHashSet();
+            var newMembers = new HashSet<ObjectId>();
+            workspace.Members.Clear();
+            foreach (var userLayout in getInvitedUsers.Data.OrEmptyIfNull().IgnoreNullValues())
+            {
+                newMembers.Add(userLayout.Id);
+                workspace.Members.Add(userLayout.Id);
+            }
 
+            var updateWorkspace = await this.Repository.UpdateAsync(workspace, cancellationToken);
+            if (updateWorkspace.Success is false)
+                return operationResult.AppendErrorMessages(updateWorkspace);
+
+            var constructLayout = await this.ConstructLayout(workspace, cancellationToken);
+            if (constructLayout.Success is false)
+                return operationResult.AppendErrorMessages(constructLayout);
+
+            var updateMembersLayout = new UpdateWorkspaceMembersLayout(constructLayout.Data);
+            foreach (var oldMember in oldMembers)
+                if (newMembers.Contains(oldMember) is false)
+                    updateMembersLayout.AddRemovedUser(oldMember);
+            foreach (var newMember in newMembers)
+                if (oldMembers.Contains(newMember) is false)
+                    updateMembersLayout.AddNewUser(newMember);
+
+            operationResult.Data = updateMembersLayout;
             return operationResult;
         }
 
@@ -147,10 +168,43 @@
             entity.OwnerId = this._authenticationContext.CurrentUser.Id;
             return operationResult;
         }
+        
+        protected override async Task<IOperationResult<IEnumerable<IWorkspaceLayout>>> ConstructManyLayouts(IEnumerable<Workspace> entities, CancellationToken cancellationToken)
+        {
+            var operationResult = new OperationResult<IEnumerable<IWorkspaceLayout>>();
 
-        protected override Task<IOperationResult<IWorkspaceLayout>> ConstructLayout(Workspace entity, CancellationToken cancellationToken) => Task.FromResult(this.ConstructLayoutInternally(entity));
+            var layouts = new List<IWorkspaceLayout>();
+            operationResult.Data = layouts;
+            
+            var iteratedEntities = entities.OrEmptyIfNull().IgnoreNullValues().ToList().AsReadOnly();
+            if (iteratedEntities.Any() is false)
+                return operationResult;
 
-        private IOperationResult<IWorkspaceLayout> ConstructLayoutInternally(Workspace entity)
+            var userIdentifiers = iteratedEntities.Select(m => m.OwnerId);
+            var getUsers = await this._userService.GetManyAsync(userIdentifiers, cancellationToken);
+            if (getUsers.Success is false)
+                return operationResult.AppendErrorMessages(getUsers);
+
+            var organizedUsers = new Dictionary<ObjectId, IUserLayout>();
+            foreach (var userLayout in getUsers.Data.OrEmptyIfNull().IgnoreNullValues())
+                organizedUsers[userLayout.Id] = userLayout;
+
+            foreach (var message in iteratedEntities)
+            {
+                organizedUsers.TryGetValue(message.OwnerId, out var author);
+                var constructMessageLayout = this.ConstructLayoutInternally(message, author);
+                if (constructMessageLayout.Success is false)
+                    return operationResult.AppendErrorMessages(constructMessageLayout);
+
+                var constructedLayout = constructMessageLayout.Data;
+                if (constructedLayout is not null)
+                    layouts.Add(constructedLayout);
+            }
+
+            return operationResult;
+        }
+
+        protected override async Task<IOperationResult<IWorkspaceLayout>> ConstructLayout(Workspace entity, CancellationToken cancellationToken)
         {
             var operationResult = new OperationResult<IWorkspaceLayout>();
 
@@ -158,7 +212,28 @@
             if (operationResult.Success == false)
                 return operationResult;
 
-            operationResult.Data = new WorkspaceLayout(entity.Id, entity.Name, entity.Description);
+            var getAuthor = await this._userService.GetAsync(entity.OwnerId, cancellationToken).ConfigureAwait(false);
+            if (getAuthor.Success is false)
+                return operationResult.AppendErrorMessages(getAuthor);
+
+            var constructLayout = this.ConstructLayoutInternally(entity, getAuthor.Data);
+            if (constructLayout.Success is false)
+                return operationResult.AppendErrorMessages(constructLayout);
+
+            operationResult.Data = constructLayout.Data;
+            return operationResult;
+        }
+
+        private IOperationResult<IWorkspaceLayout> ConstructLayoutInternally(Workspace entity, IUserLayout owner)
+        {
+            var operationResult = new OperationResult<IWorkspaceLayout>();
+
+            operationResult.ValidateNotNull(entity);
+            operationResult.ValidateNotNull(owner);
+            if (operationResult.Success == false)
+                return operationResult;
+
+            operationResult.Data = new WorkspaceLayout(entity.Id, entity.Name, entity.Description, owner);
             return operationResult;
         }
 

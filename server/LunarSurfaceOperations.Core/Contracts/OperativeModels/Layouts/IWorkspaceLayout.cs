@@ -4,5 +4,6 @@
     {
         string Name { get; }
         string Description { get; }
+        IUserLayout Owner { get; }
     }
 }

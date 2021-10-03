@@ -5,14 +5,16 @@
 
     public record WorkspaceLayout : BaseLayout, IWorkspaceLayout
     {
-        public WorkspaceLayout(ObjectId id, string name, string description)
+        public WorkspaceLayout(ObjectId id, string name, string description, IUserLayout owner)
             : base(id)
         {
             this.Name = name;
             this.Description = description;
+            this.Owner = owner;
         }
 
         public string Name { get; }
         public string Description { get; }
+        public IUserLayout Owner { get; }
     }
 }

@@ -13,11 +13,11 @@
         [BsonElement("d")]
         [BsonIgnoreIfDefault]
         public string Description { get; set; }
-        
+
         [BsonElement("o")]
         public ObjectId OwnerId { get; [UsedImplicitly] set; }
-        
+
         [BsonElement("m")]
-        public IEnumerable<ObjectId> Members { get; [UsedImplicitly] set; }
+        public List<ObjectId> Members { get; [UsedImplicitly] set; } = new();
     }
 }

@@ -7,11 +7,13 @@
     using System.Threading.Tasks;
     using JetBrains.Annotations;
     using LunarSurfaceOperations.API.Factories.Contracts;
+    using LunarSurfaceOperations.API.Hubs;
     using LunarSurfaceOperations.API.ViewModels.Workspace;
     using LunarSurfaceOperations.Core.Contracts.Services;
     using LunarSurfaceOperations.Core.OperativeModels.Prototypes;
     using LunarSurfaceOperations.Resources;
     using Microsoft.AspNetCore.Mvc;
+    using Microsoft.AspNetCore.SignalR;
     using MongoDB.Bson;
     using Quantum.DMS.Utilities;
 
@@ -24,15 +26,23 @@
 
         [NotNull]
         private readonly IWorkspaceFactory _workspaceFactory;
-        
+
         [NotNull]
         private readonly IUserFactory _userFactory;
 
-        public WorkspacesController([NotNull] IWorkspaceService workspaceService, [NotNull] IWorkspaceFactory workspaceFactory, [NotNull] IUserFactory userFactory)
+        [NotNull]
+        private readonly IHubContext<WorkspacesHub, IWorkspaceHubClient> _workspacesHubContext;
+
+        public WorkspacesController(
+            [NotNull] IWorkspaceService workspaceService,
+            [NotNull] IWorkspaceFactory workspaceFactory,
+            [NotNull] IUserFactory userFactory,
+            [NotNull] IHubContext<WorkspacesHub, IWorkspaceHubClient> workspacesHubContext)
         {
             this._workspaceService = workspaceService ?? throw new ArgumentNullException(nameof(workspaceService));
             this._workspaceFactory = workspaceFactory ?? throw new ArgumentNullException(nameof(workspaceFactory));
             this._userFactory = userFactory ?? throw new ArgumentNullException(nameof(userFactory));
+            this._workspacesHubContext = workspacesHubContext ?? throw new ArgumentNullException(nameof(workspacesHubContext));
         }
 
         [HttpPost]
@@ -76,6 +86,18 @@
             var updateMembers = await this._workspaceService.UpdateMembersAsync(id, request.Members.OrEmptyIfNull().IgnoreNullValues(), cancellationToken);
             if (updateMembers.Success == false)
                 return this.BadRequest(updateMembers.ToString());
+
+            var updateMembersLayout = updateMembers.Data;
+            if (updateMembersLayout is null)
+                return this.BadRequest(ValidationMessages.InvalidRequest);
+
+            var newUsers = updateMembersLayout.NewUsers.OrEmptyIfNull().IgnoreDefaultValues().Select(x => x.ToString()).ToHashSet();
+            var oldUsers = updateMembersLayout.RemovedUsers.OrEmptyIfNull().IgnoreDefaultValues().Select(x => x.ToString()).ToHashSet();
+
+            if (newUsers.Any())
+                await this._workspacesHubContext.Clients.Users(newUsers).InviteToWorkspace(updateMembersLayout.Workspace);
+            if (oldUsers.Any())
+                await this._workspacesHubContext.Clients.Users(oldUsers).RemoveFromWorkspace(updateMembersLayout.Workspace.Id.ToString());
 
             return this.Ok();
         }

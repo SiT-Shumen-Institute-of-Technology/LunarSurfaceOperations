@@ -49,21 +49,6 @@ namespace LunarSurfaceOperations.Data.Repositories
             return operationResult;
         }
 
-        public async Task<IOperationResult> UpdateMembers(ObjectId workspaceId, IEnumerable<ObjectId> members, CancellationToken cancellationToken)
-        {
-            var operationResult = new OperationResult();
-
-            var filter = Builders<Workspace>.Filter.Eq(x => x.Id, workspaceId);
-            var updateDefinition = Builders<Workspace>.Update.Set(x => x.Members, members.OrEmptyIfNull().IgnoreDefaultValues());
-            var updateOptions = new UpdateOptions();
-
-            var updateResult = await this.UpdateAsync(filter, updateDefinition, updateOptions, cancellationToken);
-            if (updateResult.Success == false)
-                operationResult.AppendErrorMessages(updateResult);
-
-            return operationResult;
-        }
-
         protected override string CollectionName => CollectionNames.Workspaces;
     }
 }

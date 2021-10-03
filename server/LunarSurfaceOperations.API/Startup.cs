@@ -84,6 +84,7 @@ namespace LunarSurfaceOperations.API
             services.AddSingleton<IValidator<IWorkspacePrototype>, WorkspaceValidator>();
             services.AddScoped<IValidator<IMessagePrototype>, MessageValidator>();
             services.AddSingleton<IValidator<MessageStringAttributePrototype>, MessageStringAttributeValidator>();
+            services.AddSingleton<IUserIdProvider, UserIdProvider>();
 
             services.Configure<DatabaseSettings>(this._configuration.GetSection(DatabaseSettings.Section));
 
