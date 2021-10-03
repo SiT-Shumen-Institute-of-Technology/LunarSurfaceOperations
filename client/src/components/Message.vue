@@ -6,7 +6,7 @@
 
         <div>
             <span v-for="attribute in attributes" :key="attribute"> 
-                {{ attribute.attributeName }}: {{ attribute.value }}
+                {{ attribute.attributeName }}: {{ attribute.value }}<br>
             </span>
         </div>
         <button v-if="username === author.username && !status" @click="approve">Approve</button>
