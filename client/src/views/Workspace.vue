@@ -4,7 +4,8 @@
             <Message v-for="message in messages" :key="message"
                 :id="message.id"
                 :attributes="message.attributes"
-                :isMe="true"
+                :timestamp="message.timestamp"
+                :author="message.author"
                 :text="message.text" />
         </div>
         <ChatInputField :workspaceId="mainId" />

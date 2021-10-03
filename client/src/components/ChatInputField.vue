@@ -7,12 +7,20 @@
             <button @click="send" class="send">Send</button>
         </div>
     </div>
+    
+    <div class="add-username">
+        <button @click="toggleUsernameAttribute"> 
+            Subject Attribute
+        </button>
+
+        <input v-if="showUsernameAttr" type="text" v-model="usernameAttr" />
+    </div>
 </template>
 
 <script lang="ts">
 import { defineComponent, ref, Ref } from 'vue'
 
-import { IMessage } from '@/types/IMessage';
+import { IAttribute, IMessage } from '@/types/IMessage';
 import { sendMessage } from '@/services/messages';
 
 export default defineComponent({
@@ -21,12 +29,18 @@ export default defineComponent({
     },
     setup(props) {
         const inputValue: Ref<string> = ref('');
+        const showUsernameAttr: Ref<boolean> = ref(false);
+        const usernameAttr: Ref<string> = ref('');
 
         const send = async () => {
-            // TODO(n): future add attributes
             if (inputValue.value !== '') {
+                const attrs: IAttribute[] = [
+                    { type: 'string', value: usernameAttr.value, attributeName: 'subject' }
+                ];
+
                 const message: IMessage = {
-                    text: inputValue.value
+                    text: inputValue.value,
+                    attributes: attrs 
                 };
 
                 const result = await sendMessage(message, props.workspaceId || '');
@@ -39,10 +53,17 @@ export default defineComponent({
             }
         }
 
+        const toggleUsernameAttribute = () => {
+            showUsernameAttr.value = !showUsernameAttr.value;
+        }
+
         return {
             inputValue,
             sendMessage,
-            send
+            send,
+            toggleUsernameAttribute,
+            showUsernameAttr,
+            usernameAttr
         }
     }
 })

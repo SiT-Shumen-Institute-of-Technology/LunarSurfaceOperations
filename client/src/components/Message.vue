@@ -1,6 +1,14 @@
 <template>
-    <div :id="id" class="message" :class="{ 'sent-by-me': isMe }">
+    <div :id="id" class="message">
+        [{{ time }}]
+        {{ author.username }}:
         {{ text }}
+
+        <div>
+            <span v-for="attribute in attributes" :key="attribute"> 
+                {{ attribute.attributeName }}: {{ attribute.value }}
+            </span>
+        </div>
     </div>
 </template>
 
@@ -11,17 +19,24 @@ export default defineComponent({
     props: {
         id: String,
         text: String,
+        author: Object,
         attributes: Array,
-        isMe: Boolean
+        timestamp: Number
     },
+    setup(props) {
+        return {
+            time: new Date(props.timestamp || '').toLocaleString(),
+        }
+    }
 })
 </script>
 
 <style lang="less" scoped>
     .message {
         height: auto;
-
+        background-color: rgba(250, 250, 250, 0.5);
         word-break: break-all;
+        font-size: 20px;
     }
 
     .message:not(:last-of-type) {
