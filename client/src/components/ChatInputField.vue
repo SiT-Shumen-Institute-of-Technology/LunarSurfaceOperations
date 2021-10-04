@@ -22,7 +22,7 @@
 import { defineComponent, ref, Ref } from 'vue'
 
 import { IAttribute, IMessage } from '@/types/IMessage';
-import { sendMessage } from '@/services/messages';
+import { sendMessage } from '@/services/API/messages';
 
 export default defineComponent({
     props: {

@@ -14,7 +14,7 @@
 
 <script lang="ts">
 import { useWorkspaces } from '@/composables/state/globalState';
-import { createWorkspace } from '@/services/workspaces';
+import { createWorkspace } from '@/services/API/workspaces';
 import { IVoidResult } from '@/types/IResult';
 import { defineComponent, Ref, ref } from 'vue'
 import { useRouter } from 'vue-router';
