@@ -2,7 +2,6 @@ import { createApp } from 'vue'
 import axios from 'axios'
 
 import App from './App.vue'
-import store from './store'
 import router from './router'
 import { useAuthState } from './utils/globalUtils'
 
@@ -18,4 +17,4 @@ axios.interceptors.request.use(req => {
     return req;
 });
 
-createApp(App).use(router).use(store).mount('#app')
+createApp(App).use(router).mount('#app')

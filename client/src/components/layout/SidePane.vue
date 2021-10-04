@@ -8,10 +8,10 @@
 </template>
 
 <script lang="ts">
-import { useStore } from 'vuex';
 import { defineComponent, computed, onBeforeMount } from 'vue'
 
 import { useAuthState } from '@/utils/globalUtils'
+import { useWorkspaces } from '@/composables/state/globalState';
 import WorkspaceSidePane from '@/components/WorkspaceSidePane.vue';
 
 export default defineComponent({
@@ -19,16 +19,18 @@ export default defineComponent({
         WorkspaceSidePane,
     },
     setup() {
-        const [isSignedUp] = useAuthState();
-        const store = useStore();
+        const [ isSignedUp ] = useAuthState();
+        const { fetchWorkspaces, workspaces } = useWorkspaces();
 
         onBeforeMount(async () => {
-            store.dispatch('fetchWorkspaces');
+            if (isSignedUp.value) {
+                await fetchWorkspaces();
+            }
         });
 
         return {
             isSignedUp,
-            workspaces: computed(() => store.state.workspaces)
+            workspaces: computed(() => workspaces.value)
         }
     }
 })
