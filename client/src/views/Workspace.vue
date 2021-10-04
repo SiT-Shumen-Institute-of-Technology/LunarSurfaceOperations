@@ -39,6 +39,7 @@ export default defineComponent({
             setMessages, 
             addMessage, 
             currentConnectionMessages, 
+            updateMessage
         } = useCurrentWorkspaceMessages();
 
         const { addWorkspace } = useWorkspaces();
@@ -60,7 +61,7 @@ export default defineComponent({
             addMessage(message);
         }
 
-        const updateMessage = (message: IMessage) => {
+        const updateMessageLocal = (message: IMessage) => {
             updateMessage(message);
         }
 
@@ -70,7 +71,7 @@ export default defineComponent({
 
         onMounted(async () => {
             await fetchMessages();
-            useSignalR(mainId.value, newMessage, updateMessage, updateWorkspaces);
+            useSignalR(mainId.value, newMessage, updateMessageLocal, updateWorkspaces);
         });
 
         onBeforeRouteUpdate(async (to, _, next) => {
@@ -78,7 +79,7 @@ export default defineComponent({
             mainId.value = to.params.id.toString();
             await fetchMessages();
 
-            useSignalR(to.params.id.toString(), newMessage, updateMessage, updateWorkspaces);
+            useSignalR(to.params.id.toString(), newMessage, updateMessageLocal, updateWorkspaces);
 
             next();
         });

@@ -21,7 +21,7 @@
 <script lang="ts">
 import { defineComponent, ref, Ref } from 'vue'
 
-import { IMessage } from '@/types/IMessage';
+import { IAttribute, IMessage } from '@/types/IMessage';
 import { sendMessage } from '@/services/messages';
 
 export default defineComponent({
@@ -36,7 +36,7 @@ export default defineComponent({
 
         const send = async () => {
             if (inputValue.value !== '') {
-                let attrs: any[] = [];
+                let attrs: IAttribute[] = [];
                 if (showAttributeInput.value) {
                     attrs = [
                         { type: 'string', value: subjectValue.value, attributeName: subjectName.value }
@@ -48,10 +48,8 @@ export default defineComponent({
                     attributes: attrs 
                 };
 
-
                 const result = await sendMessage(message, props.workspaceId || '');
 
-                console.log(result);
                 if (result.success) {
                     inputValue.value = '';
                     subjectName.value = '';

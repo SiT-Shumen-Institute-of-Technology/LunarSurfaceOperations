@@ -1,5 +1,7 @@
 export interface IAttribute {
     type: string,
+    attributeName?: string,
+    value?: string
 }
 
 export interface IMessage {
