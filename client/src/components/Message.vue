@@ -1,5 +1,5 @@
 <template>
-    <div :id="id" class="message" :class="{ 'isApproved': status }">
+    <div :id="id" class="message" :class="{ 'isApproved': status === 1 }">
         [{{ time }}]
         {{ author.username }}:
         {{ text }}
@@ -26,7 +26,7 @@ export default defineComponent({
         author: Object,
         attributes: Array,
         timestamp: Number,
-        status: Boolean
+        status: Number
     },
     setup(props) {
         const approve = async () => {

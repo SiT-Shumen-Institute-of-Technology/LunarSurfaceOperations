@@ -1,10 +1,16 @@
 import * as signalr from '@microsoft/signalr';
 
 import { getJWT } from '@/utils/globalUtils';
+import {IMessage} from '@/types/IMessage';
+import {IWorkspace} from '@/types/IWorkspace';
 
 let connection: signalr.HubConnection | null = null;
 
-export async function useSignalR(workspaceId: string, newMessageCallback: any, updateMessageCallback: any, updateWorkspace: any): Promise<void> {
+export async function useSignalR(
+    workspaceId: string, 
+    newMessageCallback: (message: IMessage) => void, 
+    updateMessageCallback: (message: IMessage) => void, 
+    updateWorkspace: (workspace: IWorkspace) => void): Promise<void> {
     connection = new signalr.HubConnectionBuilder()
         .withUrl(`${process.env.VUE_APP_API_ENDPOINT}/_hubs/messages` , {
             accessTokenFactory: () => getJWT() || "",
@@ -15,16 +21,15 @@ export async function useSignalR(workspaceId: string, newMessageCallback: any, u
 
     await connection.start();
 
-    connection.on('ReceiveMessage', (message: any) => {
+    connection.on('ReceiveMessage', (message: IMessage) => {
         newMessageCallback(message);
-        console.log('rec', message);
     });
 
-    connection.on('UpdateMessage', (message: any) => {
+    connection.on('UpdateMessage', (message: IMessage) => {
         updateMessageCallback(message);
     });
 
-    connection.on('InviteToWorkspace', (workspace: any) => {
+    connection.on('InviteToWorkspace', (workspace: IWorkspace) => {
         updateWorkspace(workspace);
     })
 
