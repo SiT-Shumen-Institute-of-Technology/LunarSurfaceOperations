@@ -15,8 +15,7 @@
 </template>
 
 <script lang="ts">
-import { useStore } from 'vuex';
-import { computed, defineComponent, onBeforeUnmount, onMounted, ref, Ref } from 'vue'
+import { computed, defineComponent, onMounted, ref } from 'vue'
 import { onBeforeRouteUpdate, useRoute } from 'vue-router'
 
 import { getMessages } from '@/services/messages';
@@ -25,6 +24,9 @@ import ChatInputField from '@/components/ChatInputField.vue';
 import Message from '@/components/Message.vue';
 
 import { useSignalR, resetSignalR } from '@/services/signalr/connectionHandler';
+import { useCurrentWorkspaceMessages, useWorkspaces } from '@/composables/state/globalState';
+import { IMessage } from '@/types/IMessage';
+import { IWorkspace } from '@/types/IWorkspace';
 
 export default defineComponent({
     components: {
@@ -33,7 +35,13 @@ export default defineComponent({
     },
     setup() {
         const { params: { id } } = useRoute();
-        const store = useStore();
+        const { 
+            setMessages, 
+            addMessage, 
+            currentConnectionMessages, 
+        } = useCurrentWorkspaceMessages();
+
+        const { addWorkspace } = useWorkspaces();
 
         const mainId = ref('');
         mainId.value = id.toString();
@@ -41,23 +49,23 @@ export default defineComponent({
         const fetchMessages = async () => {
             const getMessagesResult = await getMessages(mainId.value);
             if (getMessagesResult.success) {
-                store.commit('setMessages', getMessagesResult.data);
+                setMessages(getMessagesResult.data);
             } else {
                 // TODO(n): handle errors here
                 console.log(...getMessagesResult.errors);
             }
         }
 
-        const newMessage = (message: any) => {
-            store.commit('addMessage', message);
+        const newMessage = (message: IMessage) => {
+            addMessage(message);
         }
 
-        const updateMessage = (message: any) => {
-            store.commit('updateMessage', message);
+        const updateMessage = (message: IMessage) => {
+            updateMessage(message);
         }
 
-        const updateWorkspaces = (workspace: any) => {
-            store.commit('updateWorkspaces', workspace);
+        const updateWorkspaces = (workspace: IWorkspace) => {
+            addWorkspace(workspace);
         }
 
         onMounted(async () => {
@@ -77,7 +85,7 @@ export default defineComponent({
 
         return {
             mainId,
-            messages: computed(() => store.state.currentConnectionMessages),
+            messages: computed(() => currentConnectionMessages.value),
         }
     },
 })

@@ -8,3 +8,10 @@ export interface IMessage {
     attributes?: IAttribute[],
     isMe?: boolean
 }
+
+export interface IUseMessages {
+    currentConnectionMessages: any,
+    addMessage: (message: IMessage) => void,
+    setMessages: (messages: IMessage[]) => void,
+    updateMessage: (message: IMessage) => void
+}

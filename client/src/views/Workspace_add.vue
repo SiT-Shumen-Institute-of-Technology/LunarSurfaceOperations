@@ -13,10 +13,10 @@
 </template>
 
 <script lang="ts">
+import { useWorkspaces } from '@/composables/state/globalState';
 import { createWorkspace } from '@/services/workspaces';
 import { IVoidResult } from '@/types/IResult';
 import { defineComponent, Ref, ref } from 'vue'
-import { useStore } from 'vuex';
 import { useRouter } from 'vue-router';
 
 import CustomInput from '../components/CustomInput.vue';
@@ -28,8 +28,9 @@ export default defineComponent({
         ErrorFields
     },
     setup() {
+        const { fetchWorkspaces } = useWorkspaces();
+
         const router = useRouter()
-        const store = useStore();
         const errors: Ref<string[]> = ref([]);
         const name: Ref<string> = ref('');
         const description: Ref<string> = ref('');
@@ -46,7 +47,7 @@ export default defineComponent({
             const result: IVoidResult = await createWorkspace(name.value, description.value);
 
             if (result.success) {
-                store.dispatch('fetchWorkspaces');
+                await fetchWorkspaces();
                 router.push('/');
             } else {
                 errors.value = [...new Set(result.errors)];

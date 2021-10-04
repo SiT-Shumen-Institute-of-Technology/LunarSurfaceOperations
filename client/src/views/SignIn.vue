@@ -14,7 +14,6 @@
 </template>
 
 <script lang="ts">
-import { useStore } from 'vuex';
 import { defineComponent, Ref, ref } from 'vue'
 import { Router, useRouter } from 'vue-router';
 
@@ -25,6 +24,7 @@ import { IBearer } from '@/types/IBearer';
 
 import CustomInput from '../components/CustomInput.vue';
 import ErrorFields from '../components/ErrorFields.vue';
+import { useWorkspaces } from '@/composables/state/globalState';
 
 export default defineComponent({
     components: {
@@ -32,7 +32,7 @@ export default defineComponent({
         ErrorFields
     },
     setup() {
-        const store = useStore();
+        const { fetchWorkspaces } = useWorkspaces();
         const username: Ref<string> = ref('');
         const password: Ref<string> = ref('');
         const errors: Ref<string[]> = ref([]);
@@ -52,9 +52,10 @@ export default defineComponent({
             if (loginResult.success && loginResult.data.token) {
                 const [ _, setSignedIn ] = useAuthState();
                 setJWT(loginResult.data.token);
+                // TODO(n): put this somewhere else
                 window.localStorage.setItem('username', username.value);
                 setSignedIn(username.value);
-                store.dispatch('fetchWorkspaces');
+                await fetchWorkspaces();
                 router.push('/');
             } else {
                 errors.value = [...new Set(loginResult.errors)];

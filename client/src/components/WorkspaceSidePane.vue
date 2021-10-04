@@ -28,7 +28,7 @@ export default defineComponent({
 <style lang="less" scoped>
     .link {
         width: -webkit-fill-available;
-        width: fill-available;
+        width: stretch;
         width: -moz-available;
     }
 </style>

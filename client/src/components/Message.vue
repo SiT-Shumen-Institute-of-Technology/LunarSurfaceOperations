@@ -17,7 +17,6 @@
 import { defineComponent } from 'vue'
 
 import { approveMessage } from '@/services/messages';
-import { useStore } from 'vuex';
 
 export default defineComponent({
     props: {
@@ -30,9 +29,8 @@ export default defineComponent({
         status: Boolean
     },
     setup(props) {
-        const store = useStore();
         const approve = async () => {
-            const result = await approveMessage(props.workspaceId || '', props.id || '');
+            await approveMessage(props.workspaceId || '', props.id || '');
         };
         return {
             time: new Date(props.timestamp || '').toLocaleString(),
