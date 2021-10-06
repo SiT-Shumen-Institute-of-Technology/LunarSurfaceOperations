@@ -18,7 +18,7 @@ import { defineComponent, Ref, ref } from 'vue'
 import { Router, useRouter } from 'vue-router';
 
 import { useAuthState, setJWT } from '@/utils/globalUtils';
-import { signin } from '@/services/auth';
+import { signin } from '@/services/API/auth';
 import { IResult } from '@/types/IResult';
 import { IBearer } from '@/types/IBearer';
 
@@ -49,7 +49,7 @@ export default defineComponent({
         const submit = async () => {
             const loginResult: IResult<IBearer> = await signin(username.value, password.value);
 
-            if (loginResult.success && loginResult.data.token) {
+            if (loginResult.success && loginResult.data?.token) {
                 const [ _, setSignedIn ] = useAuthState();
                 setJWT(loginResult.data.token);
                 // TODO(n): put this somewhere else

@@ -16,13 +16,20 @@
 import { defineComponent } from 'vue'
 
 import { useAuthState, removeJWT } from '@/utils/globalUtils';
+import { useCurrentWorkspaceMessages, useWorkspaces } from '@/composables/state/globalState';
 
 export default defineComponent({
     setup() {
         const [ isSignedIn, _, setSingnedOut, username ] = useAuthState();
+        const { setWorkspaces } = useWorkspaces();
+        const { setMessages } = useCurrentWorkspaceMessages();
         const signOut = () => {
             removeJWT();
             window.localStorage.removeItem('username');
+
+            setWorkspaces([]);
+            setMessages([]);
+
             setSingnedOut();
         }
 

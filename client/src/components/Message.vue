@@ -16,7 +16,7 @@
 <script lang="ts">
 import { defineComponent } from 'vue'
 
-import { approveMessage } from '@/services/messages';
+import { approveMessage } from '@/services/API/messages';
 
 export default defineComponent({
     props: {

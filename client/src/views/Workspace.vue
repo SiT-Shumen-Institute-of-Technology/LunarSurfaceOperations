@@ -18,7 +18,7 @@
 import { computed, defineComponent, onMounted, ref } from 'vue'
 import { onBeforeRouteUpdate, useRoute } from 'vue-router'
 
-import { getMessages } from '@/services/messages';
+import { getMessages } from '@/services/API/messages';
 
 import ChatInputField from '@/components/ChatInputField.vue';
 import Message from '@/components/Message.vue';
@@ -49,7 +49,7 @@ export default defineComponent({
 
         const fetchMessages = async () => {
             const getMessagesResult = await getMessages(mainId.value);
-            if (getMessagesResult.success) {
+            if (getMessagesResult.success && getMessagesResult.data) {
                 setMessages(getMessagesResult.data);
             } else {
                 // TODO(n): handle errors here

@@ -15,7 +15,7 @@
 </template>
 
 <script lang="ts">
-import { register } from '@/services/auth';
+import { register } from '@/services/API/auth';
 import { IVoidResult } from '@/types/IResult';
 import { defineComponent, Ref, ref } from 'vue'
 import { Router, useRouter } from 'vue-router';
