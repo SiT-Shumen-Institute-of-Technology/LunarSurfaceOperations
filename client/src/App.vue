@@ -1,9 +1,11 @@
 <template>
-    <Nav />
-    <div class="main-content">
-        <SidePane />
-        <div class="main-content-placeholder">
-            <router-view/>
+    <div class="root-element">
+        <Nav />
+        <div class="main-content">
+            <SidePane />
+            <div class="main-content-placeholder">
+                <router-view/>
+            </div>
         </div>
     </div>
 </template>
@@ -23,12 +25,13 @@ export default defineComponent({
 </script>
 
 <style lang="less">
-    html, body {
+    html, body, #app {
         margin: 0;
         height: 100%;
+        font-family: Arial, Helvetica, sans-serif; 
     }
 
-    body:before {
+    .root-element:before {
         content: ''; 
         display: block;
         position: absolute;
@@ -37,6 +40,7 @@ export default defineComponent({
         width: 100%;
         height: 100%;
         opacity: 0.6;
+        z-index: -1;
         background-image: url('./assets/background.jpg');
 
         background-size: 100% 100%;
@@ -44,7 +48,7 @@ export default defineComponent({
         background-position: center;
     }
 
-    #app {
+    .root-element {
         height: 100%;
         display: flex;
         flex-flow: column;
@@ -86,6 +90,34 @@ export default defineComponent({
         &:hover {
             background-color: lightblue;
             color: black;
+        }
+    }
+
+    .form {
+        display: grid;
+        max-width: 50%;
+        margin: 20px auto;
+
+        grid-template-columns: repeat(2, 1fr);
+        grid-auto-rows: minmax(40px, auto);
+
+        &__field {
+            grid-column-end: span 2;
+        }
+
+        &__submit {
+            grid-column-end: span 1;
+            
+            border: 0;
+            text-transform: uppercase;
+            background-color: black;
+            color: white;
+
+            opacity: 0.9;
+
+            &:hover {
+                cursor: pointer;
+            }
         }
     }
 </style>

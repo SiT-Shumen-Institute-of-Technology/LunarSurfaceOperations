@@ -1,15 +1,29 @@
 <template>
-    <div class="register">
-        <div class="register-wrapper">
-            <ErrorFields :errors="errors" />
+    <form @keypress.enter.prevent="submit">
+        <div class="form">
+            <div v-if="errors.length > 0" class="form__field form__field--errors">
+                <ErrorFields :errors="errors" />
+            </div>
 
-            <CustomInput type="text" label="Name" @update-value="updateName" />
+            <div class="form__field">
+                <CustomInput type="text" v-model:input="name" :maxWidth="true" :opaque="true" placeholder="workspace name"/>                
+            </div>
 
-            <CustomInput type="text" label="Descriptions" @update-value="updateDescription" />
+            <div class="form__field">
+            </div>
 
-            <button @click="submit">Submit</button>
+            <div class="form__field">
+                <CustomInput type="text" v-model:input="description" :maxWidth="true" :opaque="true" placeholder="real short description"/>                
+            </div>
+
+            <div class="form__field">
+            </div>
+
+            <button class="form__submit" @click="submit">
+                Submit
+            </button>
         </div>
-    </div>
+    </form>
 </template>
 
 <script lang="ts">
@@ -35,14 +49,6 @@ export default defineComponent({
         const name: Ref<string> = ref('');
         const description: Ref<string> = ref('');
 
-        const updateName = (nameInput: string) => {
-            name.value = nameInput;
-        }
-
-        const updateDescription = (descriptionInput: string) => {
-            description.value = descriptionInput;
-        }
-
         const submit = async () => {
             const result: IVoidResult = await createWorkspace(name.value, description.value);
 
@@ -55,8 +61,8 @@ export default defineComponent({
         }
 
         return {
-            updateDescription,
-            updateName,
+            name,
+            description,
             submit,
             errors
         }

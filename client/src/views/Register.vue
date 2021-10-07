@@ -1,17 +1,36 @@
 <template>
-    <div class="register">
-        <div class="register-wrapper">
-            <ErrorFields :errors="errors" />
+    <form @keydown.enter.prevent="submit">
+        <div class="form">
+            <div v-if="errors.length > 0" class="form__field form__field--errors">
+                <ErrorFields :errors="errors" />
+            </div>
 
-            <CustomInput type="text" label="Username" @update-value="updateUsername" />
+            <div class="form__field">
+                <CustomInput type="text" v-model:input="username" :maxWidth="true" :opaque="true" placeholder="username"/>                
+            </div>
 
-            <CustomInput type="email" label="Email" @update-value="updateEmail"/>
+            <div class="form__field">
+            </div>
 
-            <CustomInput type="password" label="Password" @update-value="updatePassword" />
+            <div class="form__field">
+                <CustomInput type="email" v-model:input="email" :maxWidth="true" :opaque="true" placeholder="email"/>                
+            </div>
 
-            <button @click="submit">Submit</button>
+            <div class="form__field">
+            </div>
+
+            <div class="form__field">
+                <CustomInput type="password" v-model:input="password" :maxWidth="true" :opaque="true" placeholder="password"/>                
+            </div>
+
+            <div class="form__field">
+            </div>
+
+            <button class="form__submit" @click="submit">
+                Submit
+            </button>
         </div>
-    </div>
+    </form>
 </template>
 
 <script lang="ts">
@@ -35,18 +54,6 @@ export default defineComponent({
         const errors: Ref<string[]> = ref([]);
         const router: Router = useRouter();
 
-        const updateUsername = (userInput: string) => {
-            username.value = userInput;
-        }
-
-        const updatePassword = (passwordInput: string) => {
-            password.value = passwordInput;
-        }
-
-        const updateEmail = (emailInput: string) => {
-            email.value = emailInput;
-        }
-
         const submit = async () => {
             const registerResult: IVoidResult = await register(username.value, email.value, password.value);
 
@@ -57,9 +64,9 @@ export default defineComponent({
             }
         }
         return {
-            updateUsername,
-            updatePassword,
-            updateEmail,
+            username,
+            password,
+            email,
             submit,
             errors
         }

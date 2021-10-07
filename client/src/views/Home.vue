@@ -1,17 +1,14 @@
 <template>
   <div class="home">
-    Lunar Surface Operations
   </div>
 </template>
 
-<script>
-// @ is an alias to /src
+<script lang="ts">
+import { defineComponent } from '@vue/runtime-core';
 
-export default {
+export default defineComponent({
   name: 'Home',
-  components: {
-  }
-}
+});
 </script>
 
 <style lang="less" scoped>

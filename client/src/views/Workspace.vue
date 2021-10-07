@@ -104,26 +104,5 @@ export default defineComponent({
             justify-content: flex-end;
             flex: 1 1 auto;
         }
-
-        .input-section-wrapper {
-            flex: 0 1 auto;
-            display: flex;
-
-            .input-field {
-                flex: 0 0 90%;
-
-                .input {
-                    width: 100%;
-                }
-            }
-
-            .input-send {
-                flex: 0 0 10%;
-
-                .send {
-                    width: 100%;
-                }
-            }
-        }
     }
 </style>
