@@ -11,7 +11,7 @@
         <span 
             class="field__placeholder"
             v-if="placeholder"
-            :class="{ 'field__placeholder--active': labelActive }">
+            :class="{ 'field__placeholder--active': labelActive || type === 'date' }">
             {{ placeholder }}
         </span>
     </div>
@@ -29,7 +29,12 @@ export default defineComponent({
         type: String
     },
     setup(props) {
-        const labelActive: Ref<boolean> = ref(false);
+        let isActiveLabelToStart = false;
+        if (props.input) {
+            isActiveLabelToStart = props.input.length > 0;
+        }
+
+        const labelActive: Ref<boolean> = ref(isActiveLabelToStart);
 
         const update = () => {
             if (props.input) {
@@ -47,13 +52,14 @@ export default defineComponent({
 
 <style lang="less" scoped>
     .input--resets {
-        height: 40px;
+        height: 55px;
         border: 1px solid transparent;
         outline: 0;
         margin: 0;
         padding: 15px 5px 0 5px;
         font-size: 20px;
         background-color: #f7f7f7;
+        box-sizing: border-box;
     }
 
     .field {
