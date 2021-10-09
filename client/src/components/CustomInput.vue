@@ -11,7 +11,7 @@
         <span 
             class="field__placeholder"
             v-if="placeholder"
-            :class="{ 'field__placeholder--active': labelActive || type === 'date' }">
+            :class="{ 'field__placeholder--active': labelActive || type === 'date' || alwaysActiveLabel }">
             {{ placeholder }}
         </span>
     </div>
@@ -26,7 +26,10 @@ export default defineComponent({
         opaque: Boolean,
         placeholder: String,
         input: String,
-        type: String
+        type: String,
+        alwaysActiveLabel: {
+            default: false
+        }
     },
     setup(props) {
         let isActiveLabelToStart = false;
@@ -53,13 +56,15 @@ export default defineComponent({
 <style lang="less" scoped>
     .input--resets {
         height: 55px;
-        border: 1px solid transparent;
-        outline: 0;
         margin: 0;
         padding: 15px 5px 0 5px;
-        font-size: 20px;
-        background-color: #f7f7f7;
+
+        border: 1px solid transparent;
         box-sizing: border-box;
+        outline: 0;
+
+        font-size: 20px;
+        background-color: var(--custom-input__field--bg-color, #f7f7f7);
     }
 
     .field {
@@ -78,12 +83,12 @@ export default defineComponent({
             }
 
             &--opacity {
-                opacity: 0.8;
+                opacity: var(--custom-input__field--opacity, 0.8);
             }
 
             &--swag-border:hover,
             &--swag-border:focus {
-                border: 1px solid black;
+                border: 1px solid var(--custom-input__field--border-color, black);
             }
 
             &:focus ~ .field__placeholder {
@@ -96,7 +101,7 @@ export default defineComponent({
             top: 20px;
             left: 5px;
             pointer-events: none;
-            color: gray;
+            color: var(--custom-input__placeholder--txt-color, gray);
             font-size: 12px;
             transition: 0.2s ease all;
 

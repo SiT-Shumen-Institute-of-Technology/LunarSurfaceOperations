@@ -1,43 +1,45 @@
 <template>
-    <div v-if="isSignedUp && workspaces.length !== 0" 
+    <div v-if="isSignedIn && workspaces.length !== 0" 
         class="main-workspaces">
-        <div class="workspace" v-for="workspace in workspaces" :key="workspace">
-            <WorkspaceSidePane :id="workspace.id" :name="workspace.name" :description="workspace.description" /> 
-        </div>
+        <WorkspaceConnections :workspaces="workspaces" />
     </div>
 </template>
 
 <script lang="ts">
 import { defineComponent, computed, onBeforeMount } from 'vue'
 
-import { useAuthState } from '@/utils/globalUtils'
-import { useWorkspaces } from '@/composables/state/globalState';
-import WorkspaceSidePane from '@/components/WorkspaceSidePane.vue';
+import { 
+    useWorkspaces,
+    useAuthState    
+} from '@/composables/state/globalState';
+
+import WorkspaceConnections from '@/components/WorkspaceConnections.vue';
 
 export default defineComponent({
     components: {
-        WorkspaceSidePane,
+        WorkspaceConnections
     },
     setup() {
-        const [ isSignedUp ] = useAuthState();
+        const { isSignedIn } = useAuthState();
         const { fetchWorkspaces, workspaces } = useWorkspaces();
 
         onBeforeMount(async () => {
-            if (isSignedUp.value) {
+            if (isSignedIn.value) {
                 await fetchWorkspaces();
             }
         });
 
         return {
-            isSignedUp,
+            isSignedIn,
             workspaces: computed(() => workspaces.value)
         }
     }
 })
 </script>
 
-<style lang="less" scoped>
-    .main-workspaces {
-        border-right: 1px solid black;
-    }
+<style lang="less">
+.main-workspaces {
+    border-right: 1px solid black;
+    box-sizing: border-box;
+}
 </style>

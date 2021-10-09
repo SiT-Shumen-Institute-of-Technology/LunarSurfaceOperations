@@ -16,11 +16,38 @@ import { defineComponent } from 'vue'
 import Nav from './components/layout/Nav.vue';
 import SidePane from './components/layout/SidePane.vue';
 
+import { IMessage } from '@/types/IMessage';
+import { IWorkspace } from '@/types/IWorkspace';
+
+import { useSignalR } from '@/services/signalr/connectionHandler';
+import { useAuthState, useCurrentWorkspaceMessages, useWorkspaces } from '@/composables/state/globalState';
+
 export default defineComponent({
     components: {
         Nav,
         SidePane
     },
+    setup() {
+        const { addWorkspace } = useWorkspaces();
+        const { updateMessage, addMessage } = useCurrentWorkspaceMessages();
+        const { isSignedIn } = useAuthState();
+
+        const newMessage = (message: IMessage) => {
+            addMessage(message);
+        }
+
+        const updateMessageLocal = (message: IMessage) => {
+            updateMessage(message);
+        }
+
+        const updateWorkspace = (workspace: IWorkspace) => {
+            addWorkspace(workspace);
+        }
+
+        if (isSignedIn.value) {
+            useSignalR(newMessage, updateMessageLocal, updateWorkspace);
+        }
+    }
 })
 </script>
 
@@ -66,16 +93,17 @@ export default defineComponent({
         flex: 1 1 auto;
 
         .main-workspaces {
-            flex: 20%;
+            flex: 0 0 20%;
             overflow-y: auto;
         }
 
         .main-content-placeholder {
-            flex: 100%;
+            flex: 0 0 100%;
 
-            .main-workspaces ~ .main-content-placeholder {
-                flex: 80%;
-            }
+        }
+
+        .main-workspaces ~ .main-content-placeholder {
+            flex: 0 0 80%;
         }
     }
 
@@ -119,5 +147,9 @@ export default defineComponent({
                 cursor: pointer;
             }
         }
+    }
+
+    .hide {
+        display: none;
     }
 </style>

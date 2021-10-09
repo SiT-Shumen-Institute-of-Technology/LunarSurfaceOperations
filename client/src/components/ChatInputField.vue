@@ -16,49 +16,38 @@
             </button>
         </div>
 
-        <Modal v-if="showAttributesModal" @clickOut="clickout">
-            <div class="modal-content">
-                <div class="modal-content__head">
-                    <div class="modal-content__head__title">
-                        Additional Information
-                    </div>
-                    <button 
-                        @click="toggleAttributesModal" 
-                        class="modal-content__head__close">
-                        Close X
-                    </button>
-                </div>
-
-                <div class="modal-content__body">
-                    <CustomInput 
-                        :maxWidth="true"
-                        :opaque="false"
-                        placeholder="Subjcet"
-                        type="text"
-                        v-model:input="additionalInfo.subject"
-                    />
-                    <CustomInput 
-                        :maxWidth="true"
-                        :opaque="false"
-                        placeholder="Date"
-                        type="date"
-                        v-model:input="additionalInfo.date"
-                    />
-                    <CustomInput 
-                        :maxWidth="true"
-                        :opaque="false"
-                        placeholder="Additional description"
-                        type="text"
-                        v-model:input="additionalInfo.description"
-                    />
-                    <CustomInput 
-                        :maxWidth="true"
-                        :opaque="false"
-                        placeholder="Funny little message"
-                        type="text"
-                        v-model:input="additionalInfo.funnyMessage"
-                    />
-                </div>
+        <Modal v-if="showAttributesModal"
+            titleText="Addition Details"
+            @modalClose="toggleAttributesModal">
+            <div class="modal-content__body">
+                <CustomInput 
+                    :maxWidth="true"
+                    :opaque="false"
+                    placeholder="Subjcet"
+                    type="text"
+                    v-model:input="additionalInfo.subject"
+                />
+                <CustomInput 
+                    :maxWidth="true"
+                    :opaque="false"
+                    placeholder="Date"
+                    type="date"
+                    v-model:input="additionalInfo.date"
+                />
+                <CustomInput 
+                    :maxWidth="true"
+                    :opaque="false"
+                    placeholder="Additional description"
+                    type="text"
+                    v-model:input="additionalInfo.description"
+                />
+                <CustomInput 
+                    :maxWidth="true"
+                    :opaque="false"
+                    placeholder="Funny little message"
+                    type="text"
+                    v-model:input="additionalInfo.funnyMessage"
+                />
             </div>
         </Modal>
     </div>
@@ -172,54 +161,12 @@ export default defineComponent({
     }
 }
 
-.modal-content {
-    position: absolute;
-    width: 60%;
-    top: 10%;
-    left: 20%;
+.modal-content__body {
+    flex: 0 0 90%;
+    padding: 15px;
 
-    display: flex;
-    flex-direction: column;
-
-    background-color: white;
-
-    &__head {
-        flex: 0 0 10%;
-        display: flex;
-        justify-content: space-between;
-
-        border-bottom: 1px solid black;
-
-        .shared {
-            padding: 15px;
-            user-select: none
-        }
-
-        &__title {
-            .shared;
-        }
-
-        &__close {
-            .shared;
-
-            border: 0;
-            background: 0;
-            outline: 0;
-
-            &:hover {
-                cursor: pointer;
-                background-color: lightgray;
-            }
-        }
-    }
-
-    &__body {
-        flex: 0 0 90%;
-        padding: 15px;
-
-        .field:not(:first-of-type) {
-            margin-top: 10px;
-        }
+    .field:not(:first-of-type) {
+        margin-top: 10px;
     }
 }
 </style>

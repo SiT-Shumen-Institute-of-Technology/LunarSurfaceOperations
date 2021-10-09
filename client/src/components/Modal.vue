@@ -1,6 +1,18 @@
 <template>
     <div class="modal">
-        <slot></slot>
+        <div class="modal-content">
+            <div class="modal-content__head">
+                <div class="modal-content__head__title">
+                    {{ titleText }}
+                </div>
+                <button 
+                    @click="$emit('modal-close')" 
+                    class="modal-content__head__close">
+                    Close X
+                </button>
+            </div>
+            <slot></slot>
+        </div>
     </div>
 </template>
 
@@ -8,6 +20,9 @@
 import { defineComponent } from 'vue'
 
 export default defineComponent({
+    props: {
+        titleText: String
+    },
 })
 </script>
 
@@ -21,6 +36,49 @@ export default defineComponent({
     height: 100%;
     
     background: rgba(36, 36, 36, 0.4);
+}
+
+
+.modal-content {
+    position: absolute;
+    width: 60%;
+    top: 10%;
+    left: 20%;
+
+    display: flex;
+    flex-direction: column;
+
+    background-color: white;
+
+    &__head {
+        flex: 0 0 10%;
+        display: flex;
+        justify-content: space-between;
+
+        border-bottom: 1px solid black;
+
+        .shared {
+            padding: 15px;
+            user-select: none
+        }
+
+        &__title {
+            .shared;
+        }
+
+        &__close {
+            .shared;
+
+            border: 0;
+            background: 0;
+            outline: 0;
+
+            &:hover {
+                cursor: pointer;
+                background-color: lightgray;
+            }
+        }
+    }
 }
 </style>
 

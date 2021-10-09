@@ -1,8 +1,8 @@
 import {readonly, ref, Ref} from "vue";
 import {IResult} from "@/types/IResult";
-import {useAuthState} from "@/utils/globalUtils";
 import {getWorkspaces} from "@/services/API/workspaces";
 import {IWorkspace, IUseWorkspaces} from "@/types/IWorkspace";
+import {useAuthState} from '@/composables/state/globalState';
 
 const workspaces: Ref<IWorkspace[]> = ref([]);
 
@@ -16,9 +16,9 @@ export function useWorkspaces(): IUseWorkspaces  {
     };
         
     const fetchWorkspaces = async (): Promise<void> => {
-        const [isSignedUp] = useAuthState();
+        const { isSignedIn } = useAuthState();
 
-        if (isSignedUp) {
+        if (isSignedIn.value) {
             const fetchWorkspaces: IResult<IWorkspace[]> = await getWorkspaces();
 
             if (fetchWorkspaces.success && fetchWorkspaces.data) {
@@ -34,6 +34,6 @@ export function useWorkspaces(): IUseWorkspaces  {
 
         addWorkspace: addWorkspace,
         
-        fetchWorkspaces: fetchWorkspaces
+        fetchWorkspaces: fetchWorkspaces,
     }
 }

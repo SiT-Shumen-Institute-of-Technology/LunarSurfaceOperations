@@ -1,15 +1,28 @@
 <template>
     <div :id="id" class="message" :class="{ 'isApproved': status === 1 }">
-        [{{ time }}]
-        {{ author.username }}:
-        {{ text }}
-
-        <div>
-            <span v-for="attribute in attributes" :key="attribute"> 
-                {{ attribute.attributeName }}: {{ attribute.value }}<br>
+        <div class="message__time">
+            <em>[{{ time }}]</em>
+        </div>
+        
+        <div class="message__author__text">
+            <span class="author">
+                {{ author.username }}: 
+            </span>
+            <span class="text">
+                {{ text }}
             </span>
         </div>
-        <button v-if="username === author.username && !status" @click="approve">Approve</button>
+
+        <div class="message__attributes">
+            <div v-for="attribute in attributes" :key="attribute" 
+                class="attribute">
+                <Attribute :attribute="attribute" />
+            </div>
+        </div>
+        
+        <div class="message__approve">
+            <button v-if="username === author.username && !status" @click="approve">Approve</button>
+        </div>
     </div>
 </template>
 
@@ -18,7 +31,12 @@ import { defineComponent } from 'vue'
 
 import { approveMessage } from '@/services/API/messages';
 
+import Attribute from '@/components/Attribute.vue';
+
 export default defineComponent({
+    components: {
+        Attribute
+    },
     props: {
         workspaceId: String,
         id: String,
@@ -44,10 +62,15 @@ export default defineComponent({
 <style lang="less" scoped>
     .message {
         height: auto;
-        background-color: rgba(250, 250, 250, 0.5);
+        background-color: var(--message--bg-color, rgba(250, 250, 250, 0.5));
         word-break: break-all;
         font-size: 20px;
         padding: 5px 10px;
+
+        &__time {
+            font-size: 10px;
+            color: var(--message__time--txt-color, black)
+        }
     }
 
     .message:not(:last-of-type) {
@@ -55,12 +78,8 @@ export default defineComponent({
     }
 
     .message.isApproved {
-        background-color: rgba(77, 175, 124, 0.5) ;
+        background-color: var(--message--bg-color--approved ,rgba(77, 175, 124, 0.5));
 
-        color: white;
-    }
-
-    .message.sent-by-me {
-        text-align: right;
+        color: var(--message--txt-color--approved, white);
     }
 </style>

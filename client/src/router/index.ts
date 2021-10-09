@@ -1,8 +1,8 @@
-import { useAuthState } from '@/utils/globalUtils'
+import { useAuthState } from '@/composables/state/globalState';
 import { createRouter, createWebHashHistory, RouteRecordRaw } from 'vue-router'
 
 function authRestrict (to: any, from: any, next: any) {
-      const [isSignedIn] = useAuthState();
+      const {isSignedIn} = useAuthState();
       if(!isSignedIn.value) {
           next({
               path: '/signin'

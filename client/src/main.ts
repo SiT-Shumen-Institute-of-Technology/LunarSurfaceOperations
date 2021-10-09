@@ -3,10 +3,11 @@ import axios from 'axios'
 
 import App from './App.vue'
 import router from './router'
-import { useAuthState } from './utils/globalUtils'
+
+import { useAuthState } from '@/composables/state/globalState';
 
 axios.interceptors.request.use(req => {
-    const [ isSignedIn ] = useAuthState();
+    const { isSignedIn } = useAuthState();
     if (isSignedIn) {
         const token = window.localStorage.getItem('JWT');
         if (req.headers) {

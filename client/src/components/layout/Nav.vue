@@ -4,7 +4,7 @@
             <router-link v-if="isSignedIn" class="link" to="/workspace_create">+ Add workspace</router-link>
         </div>
         <div class="nav-right">
-            <span class="username" v-if="isSignedIn"> {{ username }} </span>
+            <span class="username" v-if="isSignedIn"> {{ currentlyLoggedUsername }} </span>
             <router-link v-if="!isSignedIn" class="link" to="/signin">Sign In</router-link>
             <router-link v-if="!isSignedIn" class="link" to="/register">Register</router-link>
             <router-link v-if="isSignedIn" class="link" to="/" @click="signOut">Sign out</router-link>
@@ -15,12 +15,16 @@
 <script lang="ts">
 import { defineComponent } from 'vue'
 
-import { useAuthState, removeJWT } from '@/utils/globalUtils';
-import { useCurrentWorkspaceMessages, useWorkspaces } from '@/composables/state/globalState';
+import {
+    useCurrentWorkspaceMessages,
+    useWorkspaces, 
+    useAuthState, 
+    removeJWT 
+} from '@/composables/state/globalState';
 
 export default defineComponent({
     setup() {
-        const [ isSignedIn, _, setSingnedOut, username ] = useAuthState();
+        const { isSignedIn, setSingnedOut, currentlyLoggedUsername } = useAuthState();
         const { setWorkspaces } = useWorkspaces();
         const { setMessages } = useCurrentWorkspaceMessages();
         const signOut = () => {
@@ -36,7 +40,7 @@ export default defineComponent({
         return {
             signOut,
             isSignedIn,
-            username
+            currentlyLoggedUsername
         }
     }
 })

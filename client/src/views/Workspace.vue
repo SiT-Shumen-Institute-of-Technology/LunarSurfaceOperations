@@ -23,10 +23,8 @@ import { getMessages } from '@/services/API/messages';
 import ChatInputField from '@/components/ChatInputField.vue';
 import Message from '@/components/Message.vue';
 
-import { useSignalR, resetSignalR } from '@/services/signalr/connectionHandler';
-import { useCurrentWorkspaceMessages, useWorkspaces } from '@/composables/state/globalState';
-import { IMessage } from '@/types/IMessage';
-import { IWorkspace } from '@/types/IWorkspace';
+import { connectToWorkspace, disconnectFromWorkspace } from '@/services/signalr/connectionHandler';
+import { useCurrentWorkspaceMessages } from '@/composables/state/globalState';
 
 export default defineComponent({
     components: {
@@ -37,18 +35,16 @@ export default defineComponent({
         const { params: { id } } = useRoute();
         const { 
             setMessages, 
-            addMessage, 
             currentConnectionMessages, 
-            updateMessage
         } = useCurrentWorkspaceMessages();
 
-        const { addWorkspace } = useWorkspaces();
 
         const mainId = ref('');
         mainId.value = id.toString();
 
         const fetchMessages = async () => {
             const getMessagesResult = await getMessages(mainId.value);
+
             if (getMessagesResult.success && getMessagesResult.data) {
                 setMessages(getMessagesResult.data);
             } else {
@@ -57,29 +53,20 @@ export default defineComponent({
             }
         }
 
-        const newMessage = (message: IMessage) => {
-            addMessage(message);
-        }
-
-        const updateMessageLocal = (message: IMessage) => {
-            updateMessage(message);
-        }
-
-        const updateWorkspaces = (workspace: IWorkspace) => {
-            addWorkspace(workspace);
-        }
-
         onMounted(async () => {
             await fetchMessages();
-            useSignalR(mainId.value, newMessage, updateMessageLocal, updateWorkspaces);
+
+            await connectToWorkspace(mainId.value);
         });
 
         onBeforeRouteUpdate(async (to, _, next) => {
-            resetSignalR(mainId.value);
-            mainId.value = to.params.id.toString();
-            await fetchMessages();
+            await disconnectFromWorkspace(mainId.value);
 
-            useSignalR(to.params.id.toString(), newMessage, updateMessageLocal, updateWorkspaces);
+            mainId.value = to.params.id.toString();
+
+            await connectToWorkspace(mainId.value);
+
+            await fetchMessages();
 
             next();
         });

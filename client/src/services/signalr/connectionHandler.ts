@@ -1,13 +1,12 @@
 import * as signalr from '@microsoft/signalr';
 
-import { getJWT } from '@/utils/globalUtils';
 import {IMessage} from '@/types/IMessage';
 import {IWorkspace} from '@/types/IWorkspace';
+import { getJWT } from '@/composables/state/globalState';
 
 let connection: signalr.HubConnection | null = null;
 
 export async function useSignalR(
-    workspaceId: string, 
     newMessageCallback: (message: IMessage) => void, 
     updateMessageCallback: (message: IMessage) => void, 
     updateWorkspace: (workspace: IWorkspace) => void): Promise<void> {
@@ -29,18 +28,24 @@ export async function useSignalR(
         updateMessageCallback(message);
     });
 
-    connection.on('InviteToWorkspace', (workspace: IWorkspace) => {
+    connection.on('InviteToWorkspace', (workspace: any) => {
         updateWorkspace(workspace);
-    })
+    });
 
+    connection.on('RemoveFromWorkspace', (id: string) => {
+        console.log(id);
+    });
+}
+
+export async function connectToWorkspace(workspaceId: string): Promise<void> {
     try {
-        await connection.invoke('ConnectToWorkspace', workspaceId);
+        await connection?.invoke('ConnectToWorkspace', workspaceId);
     } catch(error) {
         console.log(error);
     }
 }
 
-export async function resetSignalR(workspaceId: string): Promise<void> {
+export async function disconnectFromWorkspace(workspaceId: string): Promise<void> {
     try {
         await connection?.invoke('DisconnectFromWorkspace', workspaceId);
     } catch (error) {

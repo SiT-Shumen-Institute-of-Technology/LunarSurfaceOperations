@@ -8,5 +8,5 @@ export interface IUseWorkspaces {
     workspaces: any,
     addWorkspace: (workspace: IWorkspace) => void,
     setWorkspaces: (workspaces: IWorkspace[]) => void,
-    fetchWorkspaces: () => Promise<void>
+    fetchWorkspaces: () => Promise<void>,
 }

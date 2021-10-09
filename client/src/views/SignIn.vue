@@ -1,6 +1,6 @@
 <template>
     <form @keypress.enter.prevent="submit">
-        <div class="form">
+        <div class="form singin">
             <div v-if="errors.length > 0" class="form__field form__field--errors">
                 <ErrorFields :errors="errors" />
             </div>
@@ -30,7 +30,7 @@
 import { defineComponent, Ref, ref } from 'vue'
 import { Router, useRouter } from 'vue-router';
 
-import { useAuthState, setJWT } from '@/utils/globalUtils';
+import { useAuthState, setJWT } from '@/composables/state/globalState';
 import { signin } from '@/services/API/auth';
 import { IResult } from '@/types/IResult';
 import { IBearer } from '@/types/IBearer';
@@ -55,7 +55,7 @@ export default defineComponent({
             const loginResult: IResult<IBearer> = await signin(username.value, password.value);
 
             if (loginResult.success && loginResult.data?.token) {
-                const [ _, setSignedIn ] = useAuthState();
+                const { setSignedIn } = useAuthState();
                 setJWT(loginResult.data.token);
                 // TODO(n): put this somewhere else
                 window.localStorage.setItem('username', username.value);
