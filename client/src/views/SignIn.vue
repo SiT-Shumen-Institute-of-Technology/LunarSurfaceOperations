@@ -37,7 +37,11 @@ import { IBearer } from '@/types/IBearer';
 
 import CustomInput from '../components/CustomInput.vue';
 import ErrorFields from '../components/ErrorFields.vue';
-import { useWorkspaces } from '@/composables/state/globalState';
+import { useWorkspaces, useCurrentWorkspaceMessages } from '@/composables/state/globalState';
+import { useSignalR } from '@/services/signalr/connectionHandler';
+
+import { IWorkspace } from '@/types/IWorkspace'
+import { IMessage } from '@/types/IMessage'
 
 export default defineComponent({
     components: {
@@ -59,6 +63,28 @@ export default defineComponent({
                 setJWT(loginResult.data.token);
                 // TODO(n): put this somewhere else
                 window.localStorage.setItem('username', username.value);
+
+                
+                const { addWorkspace } = useWorkspaces();
+                const { updateMessage, addMessage } = useCurrentWorkspaceMessages();
+                const { isSignedIn } = useAuthState();
+
+                const newMessage = (message: IMessage) => {
+                    addMessage(message);
+                }
+
+                const updateMessageLocal = (message: IMessage) => {
+                    updateMessage(message);
+                }
+
+                const updateWorkspace = (workspace: IWorkspace) => {
+                    addWorkspace(workspace);
+                }
+
+                if (isSignedIn.value) {
+                    useSignalR(newMessage, updateMessageLocal, updateWorkspace);
+                }
+
                 setSignedIn(username.value);
                 await fetchWorkspaces();
                 router.push('/');
